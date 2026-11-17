@@ -2,6 +2,11 @@
 
 All notable changes to `rishadblack/sylloo-app-base` are documented in this file.
 
+## 1.0.1 - 2026-11-18
+
+- The release now ships `electron/tests`: apps copy them with `shared:sync` and their `shared:check` refuses to build
+  without them.
+
 ## 1.0.0 - 2026-11-17
 
 ### On wire-bootstrap's code field and PIN pad

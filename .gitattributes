@@ -13,7 +13,6 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /electron/node_modules export-ignore
-/electron/tests export-ignore
 /electron/sync.test.mjs export-ignore
 /electron/vitest.config.mts export-ignore
 /electron/package-lock.json export-ignore
