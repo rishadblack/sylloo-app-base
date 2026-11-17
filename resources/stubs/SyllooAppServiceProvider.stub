@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Rishadblack\SyllooAppBase\Contracts\BrowserOpener;
+use Rishadblack\SyllooAppBase\Contracts\DeviceStore;
+use Rishadblack\SyllooAppBase\Contracts\MemberDirectory;
+use Rishadblack\SyllooAppBase\Contracts\ReleaseSteps;
+use Rishadblack\SyllooAppBase\Screens\Hooks;
+
+/**
+ * What this app tells the shared base (rishadblack/sylloo-app-base): where it keeps an activation, its people and its
+ * release steps, and what it adds to the shared screens.
+ */
+class SyllooAppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(DeviceStore::class, \App\Device\SettingsDeviceStore::class);
+        $this->app->singleton(MemberDirectory::class, \App\Device\UserMemberDirectory::class);
+        $this->app->singleton(ReleaseSteps::class, \App\Device\AppReleaseSteps::class);
+        $this->app->singleton(BrowserOpener::class, \App\Device\NativeBrowserOpener::class);
+    }
+
+    public function boot(): void
+    {
+        // app(Hooks::class)->add('activate.below_code', 'device.hooks.scan-qr');
+    }
+}

@@ -1,0 +1,20 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Never in a release (composer's dist archive of a tag): the tests, the dev tools, and the Electron folder's
+# node_modules and tests. Apps install a tagged (or mirrored, not symlinked) copy for a release build.
+/.github export-ignore
+/tests export-ignore
+/build export-ignore
+/phpstan.neon export-ignore
+/phpunit.xml export-ignore
+/pint.json export-ignore
+/testbench.yaml export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/electron/node_modules export-ignore
+/electron/tests export-ignore
+/electron/sync.test.mjs export-ignore
+/electron/vitest.config.mts export-ignore
+/electron/package-lock.json export-ignore
+/electron/.gitignore export-ignore

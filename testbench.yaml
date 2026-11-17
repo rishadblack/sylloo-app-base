@@ -1,0 +1,7 @@
+# The providers Testbench (and Larastan, which boots the app through it) loads for this package.
+providers:
+  - Livewire\LivewireServiceProvider
+  - Rishadblack\WireBootstrap\WireBootstrapServiceProvider
+  - Rishadblack\WireModals\WireModalsServiceProvider
+  - Jantinnerezo\LivewireAlert\LivewireAlertServiceProvider
+  - Rishadblack\SyllooAppBase\SyllooAppBaseServiceProvider

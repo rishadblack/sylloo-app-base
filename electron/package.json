@@ -1,0 +1,22 @@
+{
+    "name": "@sylloo/desktop-base-electron",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Sylloo's shared Electron pieces for the NativePHP desktop apps (Sylloo POS, Sylloo App): print service, install key, update signature, tray hooks",
+    "type": "module",
+    "files": [
+        "src/",
+        "sync.mjs"
+    ],
+    "scripts": {
+        "test": "vitest run"
+    },
+    "peerDependencies": {
+        "electron": ">=45",
+        "express": "^5.0.0"
+    },
+    "devDependencies": {
+        "express": "^5.2.1",
+        "vitest": "^4.1.11"
+    }
+}

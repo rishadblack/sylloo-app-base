@@ -1,0 +1,352 @@
+// rishadblack/sylloo-app-base: the Sylloo look of the shared screens, on top of wire-bootstrap (Bootstrap 5).
+// Import it after Bootstrap from the app's resources/scss/app.scss (php artisan sylloo-app-base:install adds the line):
+//
+//     @import '../../vendor/rishadblack/sylloo-app-base/resources/scss/sylloo-app-base';
+//
+// Change a colour by setting its variable before the import.
+
+$sylloo-navy: #07556a !default;
+$sylloo-navy-deep: #043b4a !default;
+$sylloo-accent: #f49031 !default;
+$sylloo-accent-dark: #d9761a !default;
+$sylloo-green: #15803d !default;
+$sylloo-red: #dc2626 !default;
+$sylloo-amber: #b45309 !default;
+$sylloo-bg: #f3f5f8 !default;
+$sylloo-text: #0f1f33 !default;
+$sylloo-muted: #64748b !default;
+$sylloo-radius: 14px !default;
+
+.sylloo-app {
+    --sylloo-navy: #{$sylloo-navy};
+    --sylloo-navy-deep: #{$sylloo-navy-deep};
+    --sylloo-accent: #{$sylloo-accent};
+    --sylloo-accent-dark: #{$sylloo-accent-dark};
+    --sylloo-green: #{$sylloo-green};
+    --sylloo-red: #{$sylloo-red};
+    --sylloo-amber: #{$sylloo-amber};
+    --sylloo-bg: #{$sylloo-bg};
+    --sylloo-text: #{$sylloo-text};
+    --sylloo-muted: #{$sylloo-muted};
+    --bs-primary: #{$sylloo-navy};
+    --bs-primary-rgb: 7, 85, 106;
+    --bs-link-color: #{$sylloo-navy};
+    --bs-link-hover-color: #{$sylloo-navy-deep};
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--sylloo-bg);
+    color: var(--sylloo-text);
+
+    .btn-primary {
+        --bs-btn-bg: var(--sylloo-navy);
+        --bs-btn-border-color: var(--sylloo-navy);
+        --bs-btn-hover-bg: var(--sylloo-navy-deep);
+        --bs-btn-hover-border-color: var(--sylloo-navy-deep);
+        --bs-btn-active-bg: var(--sylloo-navy-deep);
+        --bs-btn-disabled-bg: var(--sylloo-navy);
+    }
+
+    .btn-outline-primary {
+        --bs-btn-color: var(--sylloo-navy);
+        --bs-btn-border-color: var(--sylloo-navy);
+        --bs-btn-hover-bg: var(--sylloo-navy);
+        --bs-btn-hover-border-color: var(--sylloo-navy);
+        --bs-btn-active-bg: var(--sylloo-navy-deep);
+    }
+}
+
+[data-bs-theme='dark'] .sylloo-app {
+    --sylloo-bg: #0b1622;
+    --sylloo-text: #e2e8f0;
+    --sylloo-muted: #94a3b8;
+}
+
+.sylloo-practice-bar {
+    background: var(--sylloo-accent);
+    color: #1f1300;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.35rem 1rem;
+}
+
+.sylloo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--sylloo-navy);
+    color: #fff;
+}
+
+.sylloo-brand,
+.sylloo-header-end {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+.sylloo-brand-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sylloo-business-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: var(--sylloo-accent);
+    color: #fff;
+    font-weight: 700;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.sylloo-online {
+    font-size: 0.8125rem;
+    opacity: 0.9;
+
+    &.is-offline {
+        color: var(--sylloo-accent);
+    }
+}
+
+.sylloo-main {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+}
+
+.sylloo-panel {
+    width: 100%;
+    max-width: 30rem;
+    background: var(--bs-body-bg);
+    border-radius: $sylloo-radius;
+    box-shadow: 0 10px 30px rgba(15, 31, 51, 0.08);
+    padding: 1.75rem;
+}
+
+.sylloo-steps {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+
+    li {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8125rem;
+        color: var(--sylloo-muted);
+        border-top: 3px solid rgba(100, 116, 139, 0.25);
+        padding-top: 0.5rem;
+
+        &.is-done {
+            border-color: var(--sylloo-green);
+        }
+
+        &.is-current {
+            border-color: var(--sylloo-accent);
+            color: var(--sylloo-text);
+            font-weight: 600;
+        }
+    }
+}
+
+.sylloo-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: rgba(100, 116, 139, 0.15);
+    font-size: 0.75rem;
+}
+
+.sylloo-screen-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+}
+
+.sylloo-screen-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.sylloo-screen-text,
+.sylloo-screen-todo {
+    color: var(--sylloo-muted);
+}
+
+.sylloo-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+
+    .btn-primary {
+        flex: 1 1 100%;
+        padding: 0.7rem 1rem;
+        font-weight: 600;
+    }
+}
+
+.sylloo-confirm-card {
+    margin: 1rem 0;
+    border-color: rgba(21, 128, 61, 0.35);
+}
+
+.sylloo-confirm-business {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.sylloo-question {
+    margin: 1rem 0;
+}
+
+.sylloo-rows {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1rem;
+
+    dt {
+        font-weight: 500;
+        color: var(--sylloo-muted);
+    }
+
+    dd {
+        margin: 0;
+    }
+}
+
+.sylloo-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.sylloo-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.9rem 0.5rem;
+    border: 1px solid rgba(100, 116, 139, 0.25);
+    border-radius: $sylloo-radius;
+    background: var(--bs-body-bg);
+    color: inherit;
+
+    &:hover,
+    &:focus-visible {
+        border-color: var(--sylloo-navy);
+    }
+
+    &.is-current {
+        border-color: var(--sylloo-accent);
+    }
+}
+
+.sylloo-tile-photo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    background: var(--sylloo-navy);
+    color: #fff;
+    font-weight: 700;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.sylloo-tile-label {
+    font-weight: 600;
+    text-align: center;
+}
+
+.sylloo-tile-hint {
+    font-size: 0.75rem;
+    color: var(--sylloo-muted);
+}
+
+// The member's photo above the PIN pad (the pad itself is wire-bootstrap's pin-pad, styled by its theme layer).
+.sylloo-pin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 1rem;
+}
+
+.sylloo-pin-photo {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+// The PIN pad's OK key in the Sylloo accent.
+.sylloo-app .wb-pin-key-submit {
+    border-color: var(--sylloo-accent);
+    background-color: var(--sylloo-accent);
+
+    &:hover,
+    &:active {
+        background-color: var(--sylloo-accent);
+    }
+}
+
+.sylloo-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.75rem 1rem 1.25rem;
+    font-size: 0.8125rem;
+    color: var(--sylloo-muted);
+}
+
+@media (max-width: 575.98px) {
+    .sylloo-main {
+        padding: 1rem 0.75rem;
+    }
+
+    .sylloo-panel {
+        padding: 1.25rem;
+    }
+
+    .sylloo-step-name {
+        display: none;
+    }
+}

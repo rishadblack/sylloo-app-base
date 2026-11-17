@@ -1,0 +1,706 @@
+{
+    "Activate": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/activate",
+        "answer": {
+            "device_key": "pT4wXz8QmL2vR6bN0cY3kH7sJ5dF9gA1eU4iO8tW2qZ6xC0v",
+            "device_id": 318,
+            "mode": "live",
+            "device": {
+                "id": 318,
+                "name": "Karim's phone",
+                "kind": "employee",
+                "mode": "live",
+                "status": "active",
+                "locked": false
+            },
+            "business": {
+                "name": "Demo Ltd",
+                "logo_url": null,
+                "hosts": {
+                    "live": "demo.sylloo.app",
+                    "practice": "demo-practice.sylloo.app"
+                },
+                "host_url": "https://demo.sylloo.app",
+                "rest_url": "https://demo.sylloo.app/rest/v1"
+            },
+            "plan": {
+                "active": true,
+                "ends_on": "2027-06-30",
+                "in_grace": false,
+                "valid_until": "2027-07-07"
+            },
+            "blocked": null,
+            "limits": [],
+            "min_version": "1.0.0",
+            "offline_login_days": 7
+        }
+    },
+    "Deactivate": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/deactivate",
+        "answer": {
+            "status": "releasing"
+        }
+    },
+    "Expense Claim": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/expenses/send",
+        "answer": {
+            "data": {
+                "id": "01JD8R9X1MDDDDDDDDDDDDDDDD",
+                "number": "EC-0012",
+                "total": 1350,
+                "status": "completed",
+                "state": "sent",
+                "reason": null
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Leave Request": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/leave/send",
+        "answer": {
+            "data": {
+                "id": "01JD8R2V5KDDDDDDDDDDDDDDDD",
+                "type": "Casual leave",
+                "from": "2026-11-24",
+                "to": "2026-11-25",
+                "days": 2,
+                "status": "completed",
+                "state": "sent",
+                "reason": null
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Attendance Punches": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/attendance-punches",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                    "type": "in",
+                    "at": "2026-11-17T09:00:01Z",
+                    "state": "sent",
+                    "reason": null,
+                    "outside": false,
+                    "fake": false,
+                    "method": "app"
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Attendance": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/attendance",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD8S1A2BDDDDDDDDDDDDDDDD",
+                    "date": "2026-11-16",
+                    "check_in": "09:02",
+                    "check_out": "18:05",
+                    "status": 1,
+                    "worked_minutes": 543
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Expense Categories": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/expense-categories",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JC30M4EDDDDDDDDDDDDDDDDD",
+                    "name": "Transport"
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Expense Claims": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/expense-claims",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD8R9X1MDDDDDDDDDDDDDDDD",
+                    "number": "EC-0012",
+                    "total": 1350,
+                    "status": "completed",
+                    "state": "sent",
+                    "reason": null
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Field Visits": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/field-visits",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD8Q7T2BDDDDDDDDDDDDDDDD",
+                    "customer": "Rahman Traders",
+                    "check_in_at": "2026-11-17T09:10:00Z",
+                    "check_out_at": "2026-11-17T09:40:00Z",
+                    "outcome": 1,
+                    "state": "done",
+                    "reason": null,
+                    "distance": 42
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Leave Balances": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/leave-balances",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JC2X0B3CDDDDDDDDDDDDDDDD",
+                    "leave_type_id": "01JC2W4NDDDDDDDDDDDDDDDDDD",
+                    "name": "Casual leave",
+                    "balance": 8
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Leave Requests": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/leave-requests",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD8R2V5KDDDDDDDDDDDDDDDD",
+                    "type": "Casual leave",
+                    "from": "2026-11-24",
+                    "to": "2026-11-25",
+                    "days": 2,
+                    "status": "completed",
+                    "state": "sent",
+                    "reason": null
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Leave Types": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/leave-types",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JC2W4NDDDDDDDDDDDDDDDDDD",
+                    "name": "Casual leave"
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "List Payslips": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/payslips",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JD2P7Q8RDDDDDDDDDDDDDDDD",
+                    "month": "2026-10",
+                    "net_pay": 42500
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Me": {
+        "door": "device",
+        "method": "GET",
+        "path": "/v1/me",
+        "answer": {
+            "employee": {
+                "id": "01JD89FAQDDDDDDDDDDDDDDDDD",
+                "name": "Karim Hossain",
+                "code": "EMP-0041",
+                "photo": "https://demo.sylloo.app/storage/employees/41.jpg"
+            },
+            "pin_set": true,
+            "pin_hash": "$2y$12$Q9…"
+        }
+    },
+    "PIN": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/pin",
+        "answer": {
+            "pin_set": true,
+            "pin_hash": "$2y$12$Q9…"
+        }
+    },
+    "Punch Offline (anchor)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/attendance/punch",
+        "answer": {
+            "data": {
+                "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                "type": "in",
+                "at": "2026-11-17T07:42:10Z",
+                "state": "sent_late",
+                "reason": null,
+                "outside": false,
+                "fake": false,
+                "method": "app"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Punch Offline (gps)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/attendance/punch",
+        "answer": {
+            "data": {
+                "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                "type": "in",
+                "at": "2026-11-17T07:42:10Z",
+                "state": "sent_late",
+                "reason": null,
+                "outside": false,
+                "fake": false,
+                "method": "app"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Punch Offline (phone)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/attendance/punch",
+        "answer": {
+            "data": {
+                "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                "type": "in",
+                "at": "2026-11-17T07:42:10Z",
+                "state": "needs_check",
+                "reason": "time_not_proven",
+                "outside": false,
+                "fake": false,
+                "method": "app"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Punch Online": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/attendance/punch",
+        "answer": {
+            "data": {
+                "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                "type": "in",
+                "at": "2026-11-17T09:00:01Z",
+                "state": "sent",
+                "reason": null,
+                "outside": false,
+                "fake": false,
+                "method": "app"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Punch with Selfie": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/attendance/punch",
+        "answer": {
+            "data": {
+                "id": "01JD8PXMHKDDDDDDDDDDDDDDDD",
+                "type": "in",
+                "at": "2026-11-17T09:00:01Z",
+                "state": "sent",
+                "reason": null,
+                "outside": false,
+                "fake": false,
+                "method": "app"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Push Token": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/push-token",
+        "answer": {
+            "push": true
+        }
+    },
+    "Released": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/released",
+        "answer": {
+            "status": "removed"
+        }
+    },
+    "Roster": {
+        "door": "rest",
+        "method": "GET",
+        "path": "reads/roster",
+        "answer": {
+            "data": {
+                "days": [
+                    {
+                        "date": "2026-11-17",
+                        "shift": "09:00 - 18:00",
+                        "start": "09:00",
+                        "end": "18:00",
+                        "off": false
+                    },
+                    {
+                        "date": "2026-11-21",
+                        "shift": null,
+                        "start": null,
+                        "end": null,
+                        "off": true
+                    }
+                ]
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Sign Out": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/sign-out",
+        "answer": {
+            "signed_out": true
+        }
+    },
+    "Sign-in Finish": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/sign-in/finish",
+        "answer": {
+            "token": "52|Xy8…",
+            "type": "bearer",
+            "expires_at": "2026-12-17T09:00:00Z",
+            "employee": {
+                "id": "01JD89FAQDDDDDDDDDDDDDDDDD",
+                "name": "Karim Hossain",
+                "code": "EMP-0041",
+                "photo": "https://demo.sylloo.app/storage/employees/41.jpg"
+            },
+            "pin_set": false,
+            "pin_hash": null,
+            "offline_login_days": 7
+        }
+    },
+    "Sign-in Start": {
+        "door": "device",
+        "method": "POST",
+        "path": "/v1/sign-in/start",
+        "answer": {
+            "request_id": "Hq3VtX9pLw2RmB7cN4ZsK8dYf6GjA1eUo5iT0nPb",
+            "browser_url": "https://demo.sylloo.app/employee/device/sign-in/Hq3VtX9pLw2RmB7cN4ZsK8dYf6GjA1eUo5iT0nPb",
+            "expires_in": 600,
+            "poll_seconds": 3
+        }
+    },
+    "State": {
+        "door": "device",
+        "method": "GET",
+        "path": "/v1/state",
+        "answer": {
+            "device": {
+                "id": 318,
+                "name": "Karim's phone",
+                "kind": "employee",
+                "mode": "live",
+                "status": "active",
+                "locked": false
+            },
+            "business": {
+                "name": "Demo Ltd",
+                "logo_url": null,
+                "portal_url": "https://portal.sylloo.app/…",
+                "hosts": {
+                    "live": "demo.sylloo.app",
+                    "practice": "demo-practice.sylloo.app"
+                },
+                "host_url": "https://demo.sylloo.app",
+                "rest_url": "https://demo.sylloo.app/rest/v1"
+            },
+            "plan": {
+                "active": true,
+                "ends_on": "2027-06-30",
+                "in_grace": false,
+                "valid_until": "2027-07-07"
+            },
+            "blocked": null,
+            "limits": [],
+            "min_version": "1.0.0",
+            "offline_login_days": 7,
+            "test": null
+        }
+    },
+    "Upload": {
+        "door": "rest",
+        "method": "POST",
+        "path": "uploads",
+        "answer": {
+            "data": {
+                "file_id": "8f2c41d0-5b7e-4c1a-9d3e-2a6b7c8d9e0f"
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Check-in": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/visits/check-in",
+        "answer": {
+            "data": {
+                "id": "01JD8Q7T2BDDDDDDDDDDDDDDDD",
+                "customer": "Rahman Traders",
+                "check_in_at": "2026-11-17T09:10:00Z",
+                "check_out_at": null,
+                "outcome": null,
+                "state": "open",
+                "reason": null,
+                "distance": 42
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Check-out (check_in_key)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/visits/check-out",
+        "answer": {
+            "data": {
+                "id": "01JD8Q7T2BDDDDDDDDDDDDDDDD",
+                "customer": "Rahman Traders",
+                "check_in_at": "2026-11-17T09:10:00Z",
+                "check_out_at": "2026-11-17T10:52:00Z",
+                "outcome": 1,
+                "state": "done",
+                "reason": null,
+                "distance": 42
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Check-out (visit_id)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/visits/check-out",
+        "answer": {
+            "data": {
+                "id": "01JD8Q7T2BDDDDDDDDDDDDDDDD",
+                "customer": "Rahman Traders",
+                "check_in_at": "2026-11-17T09:10:00Z",
+                "check_out_at": "2026-11-17T09:40:00Z",
+                "outcome": 1,
+                "state": "done",
+                "reason": null,
+                "distance": 42
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Customers": {
+        "door": "rest",
+        "method": "GET",
+        "path": "lists/visit-customers",
+        "answer": {
+            "data": [
+                {
+                    "id": "01JC4Y6AGDDDDDDDDDDDDDDDDD",
+                    "name": "Rahman Traders",
+                    "address": "Road 7, Mirpur",
+                    "latitude": 23.80672,
+                    "longitude": 90.36901
+                }
+            ],
+            "removed": [],
+            "page": 1,
+            "per_page": 100,
+            "has_more": false,
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Window Ticket": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/app-window/ticket",
+        "answer": {
+            "data": {
+                "url": "https://demo.sylloo.app/employee/app/session?ticket=…&device=318&home=…&sig=…",
+                "rules": {
+                    "allowed_paths": [
+                        "/employee",
+                        "/livewire",
+                        "/build",
+                        "/storage",
+                        "/docs",
+                        "/theme/locale",
+                        "/favicon.ico"
+                    ],
+                    "idle_minutes": 30,
+                    "min_version": "1.0.0"
+                }
+            },
+            "server_time": "2026-11-17T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    }
+}
