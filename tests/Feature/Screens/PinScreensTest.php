@@ -14,6 +14,7 @@ use Rishadblack\SyllooAppBase\Livewire\Pin;
 use Rishadblack\SyllooAppBase\Pin\Presence;
 use Rishadblack\SyllooAppBase\Screens\Handover;
 use Rishadblack\SyllooAppBase\Screens\Hooks;
+use Rishadblack\SyllooAppBase\Screens\PinScreen;
 use Rishadblack\SyllooAppBase\Testing\PretendOffice;
 use Rishadblack\SyllooAppBase\Testing\TestDevice;
 
@@ -171,6 +172,95 @@ describe('PIN pad', function () {
         app(Hooks::class)->add('pin.below_pad', fn () => 'Counter 1 opens at 9');
 
         Livewire::test(Pin::class)->assertSee('Counter 1 opens at 9');
+    });
+});
+
+describe('after a new PIN, and a verified fingerprint (base 1.1.0)', function () {
+    it('sends the person where the app says once the new PIN is saved, and home without a hook', function () {
+        $rahim = $this->device->addMember(pin: null);
+        $asked = [];
+        app(Hooks::class)->afterPinSaved(function ($member, array $context) use (&$asked) {
+            $asked[] = [$member->memberKey(), $context['screen']];
+
+            return '/fingerprint-offer';
+        });
+        Handover::put('member', $rahim->memberKey());
+
+        Livewire::test(CreatePin::class)
+            ->set('fields.pin', '1357')
+            ->set('fields.pin_confirmation', '1357')
+            ->call('run', 'save')
+            ->assertRedirect(url('/fingerprint-offer'));
+
+        expect($asked)->toBe([['member-1', 'create_pin']])
+            ->and(app(Presence::class)->memberKey('default'))->toBe('member-1');
+    });
+
+    it('asks nothing when the PIN could not be saved', function () {
+        $asked = 0;
+        app(Hooks::class)->afterPinSaved(function () use (&$asked) {
+            $asked++;
+
+            return null;
+        });
+        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        $this->office->down();
+
+        Livewire::test(CreatePin::class)
+            ->set('fields.pin', '1357')
+            ->set('fields.pin_confirmation', '1357')
+            ->call('run', 'save')
+            ->assertNoRedirect();
+
+        expect($asked)->toBe(0);
+    });
+
+    it('goes home when the hook says null', function () {
+        $asked = 0;
+        app(Hooks::class)->afterPinSaved(function () use (&$asked) {
+            $asked++;
+
+            return null;
+        });
+        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+
+        Livewire::test(CreatePin::class)
+            ->set('fields.pin', '1357')
+            ->set('fields.pin_confirmation', '1357')
+            ->call('run', 'save')
+            ->assertRedirect(url('/'));
+
+        expect($asked)->toBe(1);
+    });
+
+    it('lets the person in after a verified fingerprint, as a right PIN does', function () {
+        Event::fake([PersonSignedIn::class]);
+        $rahim = $this->device->addMember();
+        Handover::put('member', $rahim->memberKey());
+        $this->office->down();
+        $screen = app(PinScreen::class);
+
+        $state = $screen->enterVerified($screen->start());
+
+        expect($state->go)->toBe('home')
+            ->and(app(Presence::class)->memberKey('default'))->toBe('member-1');
+        Event::assertDispatched(PersonSignedIn::class, fn (PersonSignedIn $event) => $event->offline);
+    });
+
+    it('never lets a page call it as an action, and still needs a valid sign-in and a PIN here', function () {
+        Handover::put('member', $this->device->addMember()->memberKey());
+
+        Livewire::test(Pin::class)->call('run', 'enter_verified')->assertNoRedirect();
+        expect(app(Presence::class)->memberKey('default'))->toBeNull();
+
+        $screen = app(PinScreen::class);
+        Handover::put('member', $this->device->addMember('member-2', 'Karim', pin: null)->memberKey());
+
+        expect($screen->enterVerified($screen->start())->go)->not->toBe('home');
+
+        Handover::forget('member');
+
+        expect($screen->enterVerified($screen->start())->go)->toBe('sign_in');
     });
 });
 

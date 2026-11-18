@@ -2,6 +2,55 @@
 
 All notable changes to `rishadblack/sylloo-app-base` are documented in this file.
 
+## 1.1.0 - 2026-11-18
+
+### The business window (from Sylloo App's desktop D2)
+
+- `Window\WindowRules`: an address with a port is refused by `mayShow()` and `isTicketUrl()`, unless the office
+  address (`erp.base_url`) carries that same port (a local office such as `https://sylloo.test:8443`); the scheme's own
+  port (`:443`) counts as no port. `mayShow()` also refuses a password in the address. `isTicketUrl()` wants exactly the
+  entrance path: `/app/session/` is refused. Both now match the desktop app's Electron `decide()` /
+  `isSessionTicketUrl()`.
+- The shared window cases ship in the release: `resources/testing/window-cases.json` (38 window cases, 13 ticket
+  addresses, the hosts, the paths and the office address), read through `Testing\WindowCases` (`path()`, `cases()`,
+  `tickets()`, `hosts()`, `allowedPaths()`, `useOffice()`), with the base's Pest test `WindowCasesTest`. An app's own
+  filter (Electron, Kotlin) reads the same file.
+- Connection problems of the business window: `Window\ConnectionProblems` (`check()` on the page's beat: the thin
+  "No internet" bar, a failed page hidden and named as the internet's or Sylloo's problem, tried again once online;
+  `tryAgain()`: the same page again, a one-use ticket never twice), `Window\ConnectionCheck`, the contract
+  `Contracts\WindowConnection` (the app's window: `connection`, `hide`, `retry`, `close`), the event
+  `Events\WindowLoadFailed` (an app extends it to receive it from its window), the components
+  `<x-sylloo-app-base::window.offline-bar>` and `<x-sylloo-app-base::window.problem>`, config
+  `window.status_page`, texts `window_offline_bar`, `window_load_failed_offline`, `window_load_failed_office`,
+  `window_tries_again` in English, Bangla and Finnish, and `Testing\FakeWindowConnection`.
+
+### Release signing (from Sylloo App)
+
+- `php artisan release:sign-update` (signs latest.yml: `syllooSignature` over "<version>|<sha512>") and
+  `php artisan release:sign-config` (signs the remote config file, raises `serial`, checks it as an installed app
+  would), for any app: `Update\ReleaseSigning` and config `release` (`key_path`, `public_key`, `public_key_file`,
+  `latest_yml`, `commands`). An app that still keeps its own copies sets `release.commands` false.
+
+### For the Android app (sylloo-erp-mobile-app)
+
+- `Hooks::afterPinSaved()`: after a new PIN is saved and the person is in, the app may send them elsewhere first
+  (the "Use fingerprint next time?" offer); `Hooks::pinSavedGo()`.
+- `PinScreen::enterVerified()`: go in from the PIN pad after the app verified the person another way (a fingerprint);
+  not an action, so a page can never call it.
+- `FirstScreen::screenFirst()`: the chosen language, then the first screen; the `sylloo.device` middleware uses it and
+  sylloo-app-native's `NeedsReadyDevice` / `ReadyDevice` can call it.
+- `Rest\WaitingList` keeps files of fields inside a list (`items.0.receipt`, sent as `items[0][receipt_file_id]`);
+  `WaitingList::FILE_FIELD`.
+- The signed remote config takes `release.android {url, sha256}` (https, 64 hex digits) and gives it with
+  `RemoteConfig::androidRelease()` (sha256 in lower case) for the in-app APK update.
+- `SavedData::refresh()`: a test proves a removed row is removed only from its own activation (`scope`); the reported
+  bug did not reproduce, because every query of SavedData already starts from the scoped table.
+
+### Fixed
+
+- The test of the release archive expected `/electron/tests` to be export-ignored, which 1.0.1 undid on purpose; it
+  now checks that the shared Electron tests and the window cases ship.
+
 ## 1.0.1 - 2026-11-18
 
 - The release now ships `electron/tests`: apps copy them with `shared:sync` and their `shared:check` refuses to build

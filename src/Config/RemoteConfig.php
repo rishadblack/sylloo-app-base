@@ -230,6 +230,22 @@ class RemoteConfig
         return $this->payload()['release']['latest_version'] ?? null;
     }
 
+    /**
+     * The Android installer of the latest version (base 1.1.0): `release.android {url, sha256}` of the signed file, for
+     * an app's in-app update (NativePHP Mobile `Update.Install` checks the SHA-256 before it installs). Null without
+     * one.
+     *
+     * @return array{url: string, sha256: string}|null
+     */
+    public function androidRelease(): ?array
+    {
+        $android = $this->payload()['release']['android'] ?? null;
+
+        return is_array($android) && is_string($android['url'] ?? null) && is_string($android['sha256'] ?? null)
+            ? ['url' => $android['url'], 'sha256' => strtolower($android['sha256'])]
+            : null;
+    }
+
     public function newerVersionAvailable(): bool
     {
         $latest = $this->latestVersion();
@@ -328,6 +344,15 @@ class RemoteConfig
                 }
             }
 
+            if (isset($payload['release']['android'])) {
+                $android = $payload['release']['android'];
+
+                if (! is_array($android) || ! $this->isHttpsUrl($android['url'] ?? null)
+                    || ! is_string($android['sha256'] ?? null) || preg_match('/^[0-9a-fA-F]{64}$/', $android['sha256']) !== 1) {
+                    return 'release.android needs an https url and the sha256 of the installer (64 hex digits)';
+                }
+            }
+
             $notes = $payload['release']['notes'] ?? null;
 
             if ($notes !== null && (! is_string($notes) || mb_strlen($notes) > 500)) {
@@ -345,6 +370,21 @@ class RemoteConfig
         }
 
         return null;
+    }
+
+    /**
+     * An https address without a user or password (any host: the file it names is checked by its signed sha256).
+     */
+    protected function isHttpsUrl(mixed $url): bool
+    {
+        if (! is_string($url) || filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+
+        $parts = parse_url($url);
+
+        return is_array($parts) && strtolower((string) ($parts['scheme'] ?? '')) === 'https'
+            && ($parts['host'] ?? '') !== '' && ! isset($parts['user']) && ! isset($parts['pass']);
     }
 
     protected function isAllowedHttpsUrl(mixed $url): bool

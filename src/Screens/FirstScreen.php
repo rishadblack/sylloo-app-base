@@ -4,6 +4,7 @@ namespace Rishadblack\SyllooAppBase\Screens;
 
 use Rishadblack\SyllooAppBase\Contracts\DeviceEntries;
 use Rishadblack\SyllooAppBase\Device\DeviceState;
+use Rishadblack\SyllooAppBase\Language\Language;
 use Rishadblack\SyllooAppBase\Pin\Presence;
 
 /**
@@ -22,6 +23,18 @@ class FirstScreen
     public const LOCK = 'lock';
 
     public function __construct(protected DeviceEntries $entries, protected Presence $presence) {}
+
+    /**
+     * What every face asks before an app page or native screen opens (base 1.1.0): the person's language is applied,
+     * then {@see self::name()}. The web middleware `sylloo.device` and sylloo-app-native's `NeedsReadyDevice` /
+     * `ReadyDevice` both call it, so the two steps never drift apart.
+     */
+    public function screenFirst(): ?string
+    {
+        Language::apply();
+
+        return $this->name();
+    }
 
     /**
      * The screen name (a key of ScreenRoutes), or null when the device is ready. When ready, the idle time starts

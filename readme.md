@@ -52,6 +52,22 @@ app(StateRegistry::class)->register(new StateDefinition('almost_ready', …), fn
 Event::listen(PersonSignedIn::class, …);                                        // what happened
 ```
 
+## The business window
+
+`Window\WindowRules` decides which ticket address may open the window and what it may show (no other port than the
+office's, exactly `/app/session`). The cases every side must agree on ship in `resources/testing/window-cases.json`
+(`Testing\WindowCases::path()` for a test outside PHP). `Window\ConnectionProblems` handles a page that can not load:
+bind `Contracts\WindowConnection` to your window, call `check()` on the page's beat and `tryAgain()` from "Try again",
+and draw `<x-sylloo-app-base::window.offline-bar :offline="$offline" />` and
+`<x-sylloo-app-base::window.problem :status="$status" :message="$message" />`.
+
+## Release signing
+
+`php artisan release:sign-update [latest.yml]` and `php artisan release:sign-config <file>` sign a release and the
+remote config with the release key (`SYLLOO_UPDATE_KEY_PATH`, else `~/.sylloo/update-signing.key`; never in a
+repository). The public key the app carries comes from config `sylloo-app-base.release.public_key` or the Electron
+`updateSignature.ts`.
+
 ## Documentation
 
 - `docs/architecture.md`: the areas and how they fit

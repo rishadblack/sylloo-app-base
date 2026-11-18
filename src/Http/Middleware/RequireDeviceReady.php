@@ -4,7 +4,6 @@ namespace Rishadblack\SyllooAppBase\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Rishadblack\SyllooAppBase\Language\Language;
 use Rishadblack\SyllooAppBase\Screens\FirstScreen;
 use Rishadblack\SyllooAppBase\Screens\ScreenRoutes;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,9 +22,7 @@ class RequireDeviceReady
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Language::apply();
-
-        $screen = $this->first->name();
+        $screen = $this->first->screenFirst();
 
         if ($screen !== null) {
             return redirect()->to(ScreenRoutes::url($screen));

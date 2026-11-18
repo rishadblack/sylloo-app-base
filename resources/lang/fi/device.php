@@ -229,4 +229,10 @@ return [
     'language_label' => 'Kieli',
     'language_saved' => 'Kieli tallennettiin.',
     'language_invalid' => 'Valitse jokin kielistä.',
+
+    // The business window's connection problems (Window\ConnectionProblems)
+    'window_offline_bar' => 'Ei internetiä. Työsi on yhä tallessa.',
+    'window_load_failed_offline' => 'Internet ei ole käytössä, joten sivu ei auennut.',
+    'window_load_failed_office' => 'Sylloo ei vastaa juuri nyt (se voi olla päivittymässä). Tila: :status.',
+    'window_tries_again' => ':app yrittää uudelleen itse.',
 ];

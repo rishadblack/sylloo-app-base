@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\HtmlString;
+use Rishadblack\SyllooAppBase\Contracts\DeviceMember;
 
 /**
  * Named places in the shared screens where an app adds its part, without copying the screen (plan §4.4 "Hooks").
@@ -95,6 +96,9 @@ class Hooks
 
     /** @var list<Closure(array<string, mixed>, array<string, mixed>): ?string> */
     protected array $refusalGoes = [];
+
+    /** @var list<Closure(DeviceMember, array<string, mixed>): ?string> */
+    protected array $afterPinSaved = [];
 
     /**
      * Show a piece at a place: a view name, or a closure that returns HTML (or null to show nothing this time).
@@ -413,6 +417,40 @@ class Hooks
     }
 
     /**
+     * After a new PIN was saved (Create PIN, or the PIN screen with `screens.pin.create_here`) and the person is in
+     * (base 1.1.0): the app may send them somewhere first, e.g. a phone's "Use fingerprint next time?" offer. The
+     * closure gets the person and the screen's context and returns where to go (a screen name or an app address such
+     * as `/fingerprint-offer`), or null for the usual way (home). The first answer wins; it is not asked when an app's
+     * `signed_in` finisher chose a place itself.
+     *
+     * @param  Closure(DeviceMember, array<string, mixed>): ?string  $then
+     */
+    public function afterPinSaved(Closure $then): static
+    {
+        $this->afterPinSaved[] = $then;
+
+        return $this;
+    }
+
+    /**
+     * Where to go after a new PIN was saved, or null (the usual way).
+     *
+     * @param  array<string, mixed>  $context
+     */
+    public function pinSavedGo(DeviceMember $member, array $context): ?string
+    {
+        foreach ($this->afterPinSaved as $then) {
+            $go = $then($member, $context);
+
+            if (is_string($go) && $go !== '') {
+                return $go;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Forget every piece and question (tests).
      */
     public function flush(): void
@@ -426,5 +464,6 @@ class Hooks
         $this->sentences = [];
         $this->finishers = [];
         $this->refusalGoes = [];
+        $this->afterPinSaved = [];
     }
 }

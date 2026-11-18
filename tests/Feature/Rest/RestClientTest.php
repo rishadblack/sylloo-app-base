@@ -317,6 +317,32 @@ describe('the waiting list', function () {
             && $request->hasHeader(RestWire::KEY_HEADER, 'key-in-1'));
     });
 
+    it('keeps a photo of a field inside a list (items.0.receipt) and sends its file id there', function () {
+        $this->office->uploads();
+        $this->office->rest('actions/hr/punch', ['data' => null]);
+        $receipt = aSelfie('receipt-bytes');
+        $fields = ['note' => 'Taxi', 'items' => [['amount' => 12.5, 'category' => 'travel']]];
+
+        $write = $this->list->add('hr/punch', $fields, 'key-claim-1', ['items.0.receipt' => $receipt]);
+        unlink($receipt);
+
+        expect($write->files)->toBe(['items.0.receipt' => basename($receipt)]);
+
+        $report = $this->list->send($this->client);
+
+        expect($report->sent)->toBe(1)->and(Storage::disk('local')->allFiles())->toBe([]);
+        $this->office->assertCalled('uploads', fn (Request $request) => $request->hasFile('file', 'receipt-bytes', basename($receipt))
+            && $request->hasHeader(RestWire::KEY_HEADER, RestWire::fileKey('key-claim-1', 'items.0.receipt')));
+        $this->office->assertCalled('actions/hr/punch', fn (Request $request) => $request->data() === [
+            'note' => 'Taxi',
+            'items' => [['amount' => 12.5, 'category' => 'travel', 'receipt_file_id' => 'file-1']],
+        ]);
+    });
+
+    it('refuses a file field that is not a plain or dotted name', function (string $field) {
+        expect(fn () => $this->list->add('hr/punch', [], null, [$field => aSelfie()]))->toThrow(InvalidArgumentException::class);
+    })->with(['Items.0.receipt', 'items..receipt', '../receipt', 'items.0.', 'items/0']);
+
     it('does not upload a photo twice when the action must wait', function () {
         $this->office->uploads();
         $this->office->rest('actions/hr/punch', ['message' => 'Still working.', 'code' => 'call_in_progress'], 409);
@@ -389,6 +415,21 @@ describe('saved data', function () {
             ->and($saved->row('customers', '2'))->toBe(['id' => 2, 'name' => 'Karim & Sons'])
             ->and($saved->since('customers'))->toBe('mark-2');
         $this->office->assertCalled('lists/customers', fn (Request $request) => str_contains($request->url(), 'since=mark-1'));
+    });
+
+    it('removes a row the office removed only from its own activation (scope)', function () {
+        $this->office->rest('lists/customers', ['data' => [['id' => 1, 'name' => 'Rahman Stores']], 'removed' => [], 'has_more' => false, 'server_time' => 'mark-1']);
+        $first = new SavedData('business-a');
+        $second = new SavedData('business-b');
+        $first->refresh($this->client, 'customers');
+        $second->refresh($this->client, 'customers');
+
+        $this->office->rest('lists/customers', ['data' => [], 'removed' => [1], 'has_more' => false, 'server_time' => 'mark-2']);
+        $first->refresh($this->client, 'customers');
+
+        expect($first->rows('customers'))->toBe([])
+            ->and($second->rows('customers'))->toBe([['id' => 1, 'name' => 'Rahman Stores']])
+            ->and(DB::table('sylloo_saved_rows')->where('scope', 'business-b')->count())->toBe(1);
     });
 
     it('keeps the rows as they were offline', function () {

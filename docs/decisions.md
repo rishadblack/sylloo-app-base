@@ -110,3 +110,24 @@ listed at the end for the owner.
     drawn by the base above the pad (`.sylloo-pin-photo`); wire-bootstrap 1.2's `avatar` is not used, so the base
     needs only `^1.1`.
 37. **Licence MIT** (owner's decision, before the base is published as 1.0.0).
+38. **A port only when the office has it** (1.1.0, owner's yes 2026-11-18): the window and the ticket refuse an address
+    with a port, as the desktop app's Electron filter does; the one exception is the port of the office address
+    (`erp.base_url`), so a local office on `https://sylloo.test:8443` still works in development. It is the office's
+    port, not a list per host: the business hosts come from that office. The scheme's own port (`:443`) is no port
+    (a browser drops it). The ticket path is exact (`/app/session/` refused): the ticket is the window's only door.
+39. **The window cases ship in `resources/testing/`**, not `tests/` (which is export-ignored): every app's filter
+    reads the same file from the installed package; a base test checks no export-ignore line covers it.
+40. **Connection problems are plain logic over a contract** (`WindowConnection`): the base decides (bar, failed page,
+    retry, never a ticket twice), the app's window answers (Electron, a phone's web view). The event is a plain class
+    an app extends, because receiving it from Electron needs NativePHP's `DispatchableFromNative`, which the base does
+    not require. The Electron side (`did-fail-load`, keeping the failed address) stays the app's, with its window.
+41. **Release signing commands are the base's, registered by default** (`release.commands`): the desktop app and the
+    till keep their copies until they switch, then delete them; an app keeping a copy sets the switch false so two
+    commands never share a name. The public key comes from config first, else from the app's `updateSignature.ts`.
+42. **A verified fingerprint enters through `PinScreen::enterVerified()`, never an action**: the screen's actions come
+    from the page (`run('<action>')`), so a page could send any of them; a method only the app's code calls after the
+    Keystore prompt said yes keeps the PIN the only door a page has. The offline days and the office's check still
+    hold. The fingerprint offer after Create PIN is a "where next" hook (`afterPinSaved`), asked only when the person
+    went in the usual way.
+43. **`release.android` may be on any https host** (GitHub's release files are not on the office's domains): the signed
+    `sha256` of the APK is what makes it safe, and NativePHP's `Update.Install` checks it before installing.

@@ -187,6 +187,23 @@ return [
     'window' => [
         'quiet_sign_ins_per_minute' => 3,
         'keep_alive_seconds' => 240,
+        // Connection problems (base 1.1.0, Window\ConnectionProblems): where "Sylloo is not answering" points to.
+        'status_page' => 'status.sylloo.app',
+    ],
+
+    /*
+     * Release signing (base 1.1.0): `php artisan release:sign-update` (latest.yml) and `release:sign-config` (the
+     * remote config file). `key_path` null = SYLLOO_UPDATE_KEY_PATH, else ~/.sylloo/update-signing.key (never in a
+     * repository). `public_key` = the update key built into the app; null = read from `public_key_file` (null = the
+     * NativePHP Electron plugin's `src/server/updateSignature.ts`, `export const UPDATE_PUBLIC_KEY = '…'`).
+     * `latest_yml` null = the Electron build's `dist/latest.yml`. `commands` false while an app keeps its own copies.
+     */
+    'release' => [
+        'commands' => true,
+        'key_path' => env('SYLLOO_UPDATE_KEY_PATH'),
+        'public_key' => null,
+        'public_key_file' => null,
+        'latest_yml' => null,
     ],
 
     /*

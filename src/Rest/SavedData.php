@@ -63,6 +63,7 @@ class SavedData
 
             $removed = $result->removed();
 
+            // rowsTable() is this activation's only (`where scope`): a row removed here stays in another business.
             if ($removed !== []) {
                 $this->rowsTable()->where('list', $list)->whereIn('row_id', $removed)->delete();
             }

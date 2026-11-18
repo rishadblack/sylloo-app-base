@@ -16,19 +16,21 @@ src/
   SignIn/      BrowserSignIn, SignInRequest, SignedInPerson (member or employee)
   Pin/         PinSignIn (PIN rules, offline days, five wrong), Presence (who is in, the idle lock)
   Release/     DeviceRelease (the release frame: send what waits → remove → tell the office)
-  Update/      AppUpdateService (desktop updater notices)
+  Update/      AppUpdateService (desktop updater notices), ReleaseSigning (release:sign-update / sign-config)
   Config/      RemoteConfig (the signed remote config)
   Images/      ImageCache (business logos and photos kept on the device)
   Rest/        RestClient, RestWire (the wire format), RestResult, WaitingList, WaitingWrite, SendReport, SavedData
-  Window/      WindowRules (the business window: ticket address, allowed paths, keep-alive, quiet re-sign-in)
+  Window/      WindowRules (the business window: ticket address, allowed paths, ports, keep-alive, quiet
+               re-sign-in), ConnectionProblems + ConnectionCheck (offline bar, a page that can not load, retry)
   Screens/     the shared screens' logic (Screen, ScreenState, ScreenView, Field, Button, Hooks, Question,
                Handover, ScreenRoutes, and one class per screen)
   Livewire/    the web faces (ScreenPage, ScreenModal, one class per screen, Modals/)
   Http/        RequireDeviceReady (sylloo.device), UseChosenLanguage (sylloo.language)
   Language/    Language (the chosen language of the install)
-  Events/      DeviceActivated, PersonSignedIn, DeviceLocked, SignInEnded, DeviceReleased, PinSaved
-  Console/     InstallCommand, Installer
-  Testing/     PretendOffice, OfficeExamples (+ office-examples.json), TestDevice, RecordingBrowser, in-memory stores
+  Events/      DeviceActivated, PersonSignedIn, DeviceLocked, SignInEnded, DeviceReleased, PinSaved, WindowLoadFailed
+  Console/     InstallCommand, Installer, SignUpdateCommand, SignConfigCommand
+  Testing/     PretendOffice, OfficeExamples (+ office-examples.json), TestDevice, RecordingBrowser, in-memory stores,
+               WindowCases (resources/testing/window-cases.json), FakeWindowConnection
 config/        erp.php (office address, offline days, image hosts, remote config) and sylloo-app-base.php
 database/      the waiting-list and saved-data tables
 resources/     views (layout, screen body, components), lang (en, bn, fi), scss, js, stubs, boost

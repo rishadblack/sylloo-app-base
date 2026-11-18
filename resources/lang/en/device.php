@@ -229,4 +229,10 @@ return [
     'language_label' => 'Language',
     'language_saved' => 'Language saved.',
     'language_invalid' => 'Choose one of the languages.',
+
+    // The business window's connection problems (Window\ConnectionProblems)
+    'window_offline_bar' => 'No internet. Your work is still here.',
+    'window_load_failed_offline' => 'Your internet is off, so the page could not open.',
+    'window_load_failed_office' => 'Sylloo is not answering right now (it may be updating). The status is at :status.',
+    'window_tries_again' => ':app tries again by itself.',
 ];

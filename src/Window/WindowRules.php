@@ -22,8 +22,9 @@ final class WindowRules
 
     /**
      * Whether a session-ticket answer's `url` may be opened: https (http outside production), on one of the
-     * business's hosts, at the entrance path (`/app/session` for staff, `/employee/app/session` for an employee), with
-     * no user or password in it.
+     * business's hosts, no port but the office's own ({@see self::isAllowedPort()}), at exactly the entrance path
+     * (`/app/session` for staff, `/employee/app/session` for an employee; `/app/session/` is refused, as the desktop
+     * app's Electron `isSessionTicketUrl` does), with no user or password in it.
      *
      * @param  list<string|null>  $hosts
      */
@@ -37,14 +38,16 @@ final class WindowRules
 
         return is_array($parts)
             && self::isAllowedScheme($parts['scheme'] ?? '')
+            && self::isAllowedPort($parts)
             && ! isset($parts['user']) && ! isset($parts['pass'])
             && in_array(strtolower((string) ($parts['host'] ?? '')), self::lower($hosts), true)
-            && rtrim((string) ($parts['path'] ?? ''), '/') === rtrim($entrancePath, '/');
+            && (string) ($parts['path'] ?? '') === '/'.trim($entrancePath, '/');
     }
 
     /**
-     * Whether the window may show an address: one of the business's hosts and a path under one of the allowed paths
-     * (the office's `rules.allowed_paths`, else the door's defaults). Anything else opens in the normal browser.
+     * Whether the window may show an address: one of the business's hosts, no port but the office's own
+     * ({@see self::isAllowedPort()}), no user or password, and a path under one of the allowed paths (the office's
+     * `rules.allowed_paths`, else the door's defaults). Anything else opens in the normal browser.
      *
      * @param  list<string|null>  $hosts
      * @param  list<string>  $allowedPaths
@@ -57,7 +60,8 @@ final class WindowRules
 
         $parts = parse_url($url);
 
-        if (! is_array($parts) || ! self::isAllowedScheme($parts['scheme'] ?? '') || isset($parts['user'])
+        if (! is_array($parts) || ! self::isAllowedScheme($parts['scheme'] ?? '') || ! self::isAllowedPort($parts)
+            || isset($parts['user']) || isset($parts['pass'])
             || ! in_array(strtolower((string) ($parts['host'] ?? '')), self::lower($hosts), true)) {
             return false;
         }
@@ -121,6 +125,42 @@ final class WindowRules
         Cache::put($key, [...$tries, now()->timestamp], 120);
 
         return true;
+    }
+
+    /**
+     * The port rule (base 1.1.0, decisions.md): an address with a port is refused, as the desktop app's Electron
+     * `decide()` does, unless the office address of this app (`erp.base_url`) carries that same port (a local office
+     * such as `https://sylloo.test:8443`). The scheme's own port (443 for https, 80 for http) counts as no port, as a
+     * browser reads it.
+     *
+     * @param  array<string, mixed>  $parts  parse_url() of the address.
+     */
+    public static function isAllowedPort(array $parts): bool
+    {
+        $port = self::explicitPort($parts);
+
+        if ($port === null) {
+            return true;
+        }
+
+        $office = parse_url((string) config('erp.base_url', ''));
+
+        return is_array($office) && self::explicitPort($office) === $port;
+    }
+
+    /**
+     * @param  array<string, mixed>  $parts
+     */
+    protected static function explicitPort(array $parts): ?int
+    {
+        if (! isset($parts['port'])) {
+            return null;
+        }
+
+        $port = (int) $parts['port'];
+        $default = ['https' => 443, 'http' => 80][strtolower((string) ($parts['scheme'] ?? ''))] ?? null;
+
+        return $port === $default ? null : $port;
     }
 
     protected static function isAllowedScheme(string $scheme): bool

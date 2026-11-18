@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Rishadblack\SyllooAppBase\Console\Installer;
+use Rishadblack\SyllooAppBase\Language\Language;
 use Rishadblack\SyllooAppBase\Screens\FirstScreen;
 use Rishadblack\SyllooAppBase\Testing\TestDevice;
 
@@ -67,6 +69,16 @@ describe('routes and the device middleware', function () {
 
         session(['sylloo-app-base.presence' => ['entry' => 'default', 'member' => 'member-1', 'offline' => false, 'locked' => false, 'last_seen' => now()->subMinutes(10)->timestamp]]);
         expect($first())->toBe(FirstScreen::LOCK);
+    });
+
+    it('applies the chosen language and answers the same screen through screenFirst() (middleware and native faces)', function () {
+        Storage::fake(Language::DISK);
+        TestDevice::bind(activated: false);
+        Language::choose('bn');
+        app()->setLocale('en');
+
+        expect(app(FirstScreen::class)->screenFirst())->toBe(FirstScreen::ACTIVATE)
+            ->and(app()->getLocale())->toBe('bn');
     });
 });
 

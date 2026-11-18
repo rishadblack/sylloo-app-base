@@ -396,14 +396,16 @@ describe('the idle lock source', function () {
     });
 });
 
-it('never ships the Electron node_modules or tests', function () {
+it('never ships the Electron node_modules or the base own tests, and ships the shared Electron tests (1.0.1)', function () {
     $root = dirname(__DIR__, 3);
     $ignored = file_get_contents($root.'/.gitattributes');
     $package = json_decode(file_get_contents($root.'/electron/package.json'), true);
 
-    foreach (['/electron/node_modules', '/electron/tests', '/tests'] as $path) {
+    foreach (['/electron/node_modules', '/tests'] as $path) {
         expect($ignored)->toMatch('#^'.preg_quote($path, '#').'\s+export-ignore$#m');
     }
+
+    expect($ignored)->not->toMatch('#^/electron/tests\s+export-ignore$#m');
 
     expect($package['files'])->toBe(['src/', 'sync.mjs']);
 });

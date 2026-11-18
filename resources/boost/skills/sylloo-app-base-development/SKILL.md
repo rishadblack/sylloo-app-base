@@ -55,6 +55,25 @@ not refusals of the write. Lists: page while `hasMore()`, keep the first page's 
 Send what waits when online: `(new WaitingList($entry->id))->send($client)` (`SendReport::$stoppedBy` names a gate code). Show refused writes
 (`->refused()`, each with `reason`) and let the person `retry($id)` or `forget($id)`.
 
+A file inside a list waits too: `files: ['items.0.receipt' => $path]` is sent as `items[0][receipt_file_id]`.
+
+## The business window
+
+- `WindowRules::isTicketUrl()` / `mayShow()`: no port but the office's (`erp.base_url`), exactly `/app/session`. The
+  shared cases are `Testing\WindowCases` (`resources/testing/window-cases.json`): add a case there, and let the app's
+  own filter test read `WindowCases::path()`.
+- Connection problems: bind `Contracts\WindowConnection` to the app's window; on the page's beat
+  `$check = app(ConnectionProblems::class)->check($entryId, $this->status)` (`offline` → the bar, `loadFailed` → the
+  app's own page with `ConnectionProblems::message($check->failedOffline)`, `tryAgain` → try again); "Try again":
+  `app(ConnectionProblems::class)->tryAgain($entryId, $this->status)` true = the page is back, false = open a new
+  ticket. Draw `<x-sylloo-app-base::window.offline-bar>` and `<x-sylloo-app-base::window.problem>`. Test with
+  `Testing\FakeWindowConnection::bind()`.
+
+## Release signing
+
+`php artisan release:sign-update` (postbuild) and `php artisan release:sign-config <file>`; key path and the app's
+public key from config `sylloo-app-base.release`. Tests make a throw-away key; never the real one.
+
 ## Adding to a shared screen
 
 ```php
@@ -70,6 +89,10 @@ app(StateRegistry::class)->register(
 );
 Event::listen(PersonSignedIn::class, StartSync::class);
 ```
+
+After a new PIN: `app(Hooks::class)->afterPinSaved(fn (DeviceMember $m, array $c) => $offer ? '/fingerprint-offer' : null)`.
+After the app's own fingerprint prompt said yes on the PIN pad: `app(PinScreen::class)->enterVerified($state)` (never an
+action). Before an app page or native screen: `app(FirstScreen::class)->screenFirst()` (language, then the screen).
 
 Hook places and moments of every screen are listed in the base's `docs/screens.md`. Never copy a screen's view or
 logic into the app.

@@ -93,6 +93,47 @@ class PinScreen extends Screen
     }
 
     /**
+     * Go in as if the PIN was right, after the app verified the person another way on this device (base 1.1.0: a
+     * phone's fingerprint or face through the Keystore prompt the person answered). Not an action: a page can never
+     * call it, only the app's own code once its prompt said yes. Everything else of a PIN sign-in holds: the pad must
+     * show, the person needs a valid sign-in and a PIN here, the office confirms them after the offline days, and the
+     * wrong-PIN count starts again.
+     */
+    public function enterVerified(ScreenState $state): ScreenState
+    {
+        $state->settle();
+
+        if ($state->step !== 'pad' || $state->question !== null) {
+            return $state;
+        }
+
+        $member = $this->memberFor($state);
+
+        if ($member === null || ! $member->hasValidToken()) {
+            Handover::problem($this->t('sign_in_ended'));
+
+            return $state->goTo('sign_in');
+        }
+
+        if (blank($this->entry()->members->pinHash($member))) {
+            $this->createPin($state, $member);
+
+            return $state;
+        }
+
+        $offline = $this->confirmWithOffice($state, $member);
+
+        if ($offline === null) {
+            return $state;
+        }
+
+        PinSignIn::forgetFailures($member);
+        $this->enter($state, $member, $offline);
+
+        return $state;
+    }
+
+    /**
      * @param  array<string, mixed>  $fields
      */
     protected function doSave(ScreenState $state, array $fields): void

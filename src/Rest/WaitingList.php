@@ -31,6 +31,9 @@ use Rishadblack\SyllooAppBase\Support\Texts;
  */
 class WaitingList
 {
+    /** A file's field: `selfie`, or a field inside a list named with dots (`items.0.receipt`). */
+    public const FILE_FIELD = '/^[a-z0-9_]+(\.[a-z0-9_]+)*$/';
+
     /** @var list<string> */
     protected static array $allowed = [];
 
@@ -60,7 +63,8 @@ class WaitingList
     /**
      * Keep a write to send later. The key is the one-use key the office reads (a new one when none is given). Files
      * are named by their field: `['selfie' => $path]` is uploaded first and sent as `selfie_file_id`; a copy is kept
-     * (encrypted), so the app may delete its own.
+     * (encrypted), so the app may delete its own. A field inside a list is named with dots (base 1.1.0):
+     * `['items.0.receipt' => $path]` is sent as `items[0][receipt_file_id]`.
      *
      * @param  array<string, mixed>  $fields
      * @param  array<string, string>  $files  field => path of a local file
@@ -78,8 +82,8 @@ class WaitingList
         }
 
         foreach ($files as $field => $path) {
-            if (preg_match('/^[a-z0-9_]+$/', (string) $field) !== 1 || ! is_file($path) || ! is_readable($path)) {
-                throw new InvalidArgumentException("The file {$field} can not wait: name it in lowercase letters and _, and give a readable file.");
+            if (preg_match(self::FILE_FIELD, (string) $field) !== 1 || ! is_file($path) || ! is_readable($path)) {
+                throw new InvalidArgumentException("The file {$field} can not wait: name it in lowercase letters, digits and _ (a field in a list with dots: items.0.receipt), and give a readable file.");
             }
         }
 
@@ -249,8 +253,9 @@ class WaitingList
     }
 
     /**
-     * Upload the files the write still has, each id into its fields as `<field>_file_id` (kept at once, so a later
-     * send does not upload it again). Null when every file is up; else the answer that stopped it.
+     * Upload the files the write still has, each id into its fields as `<field>_file_id` (`items.0.receipt` into
+     * `items.0.receipt_file_id`), kept at once, so a later send does not upload it again. Null when every file is up;
+     * else the answer that stopped it.
      *
      * @param  array<string, mixed>  $fields  the write's fields, given each file id
      */
@@ -277,7 +282,7 @@ class WaitingList
                 return new RestResult(OfficeOutcome::Unexpected, $result->answer, $result->status);
             }
 
-            $fields[$field.'_file_id'] = $result->fileId();
+            data_set($fields, $field.'_file_id', $result->fileId());
             unset($files[$field]);
 
             $this->table()->where('id', $write->id)->update([

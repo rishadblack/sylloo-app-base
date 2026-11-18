@@ -63,7 +63,8 @@ $report = $list->send($client);                          // online: oldest first
 - Files first: each file of a write is uploaded with its own key (`RestWire::fileKey($key, $field)`, the same on every
   send), and its id is put in the fields as `<field>_file_id` at once, so a later send does not upload it again. Then
   the action is sent. A copy of each file is kept encrypted on `rest.waiting.disk` under `rest.waiting.folder` until it
-  is uploaded, so the app may delete its own.
+  is uploaded, so the app may delete its own. A file of a field inside a list is named with dots (1.1.0):
+  `['items.0.receipt' => $path]` goes in as `items[0][receipt_file_id]`.
 - What the office answers decides what happens (table above). A refused write is kept with the code and the office's
   reason; the app shows it; `retry($id)` puts it back in line, `forget($id)` drops it and its files.
 - A send-only device (the sign-in ended) still reaches the `mayWait` actions and uploads, so the list can be sent

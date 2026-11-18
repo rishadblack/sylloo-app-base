@@ -328,6 +328,16 @@ abstract class Screen
         event(new PinSaved($entry->id, $member->memberKey()));
 
         $this->enter($state, $member, false);
+
+        // The app's place after a new PIN (Hooks::afterPinSaved, e.g. the fingerprint offer), when the person went in
+        // the usual way.
+        if ($state->go === 'home') {
+            $go = $this->hooks->pinSavedGo($member, $this->context($state));
+
+            if ($go !== null) {
+                $state->goTo($go);
+            }
+        }
     }
 
     /**

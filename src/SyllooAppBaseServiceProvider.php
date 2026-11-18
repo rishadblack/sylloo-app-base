@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use Rishadblack\SyllooAppBase\Console\InstallCommand;
+use Rishadblack\SyllooAppBase\Console\SignConfigCommand;
+use Rishadblack\SyllooAppBase\Console\SignUpdateCommand;
 use Rishadblack\SyllooAppBase\Contracts\DeviceEntries;
 use Rishadblack\SyllooAppBase\Contracts\ScreenNotices;
 use Rishadblack\SyllooAppBase\Device\SingleDeviceEntries;
@@ -71,6 +73,11 @@ class SyllooAppBaseServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'sylloo-app-base-migrations');
 
             $this->commands([InstallCommand::class]);
+
+            // Release signing (base 1.1.0): an app that still keeps its own copies sets `release.commands` false.
+            if (config('sylloo-app-base.release.commands', true)) {
+                $this->commands([SignUpdateCommand::class, SignConfigCommand::class]);
+            }
         }
     }
 }

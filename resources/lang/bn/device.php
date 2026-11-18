@@ -228,4 +228,10 @@ return [
     'language_label' => 'ভাষা',
     'language_saved' => 'ভাষা সংরক্ষণ হয়েছে।',
     'language_invalid' => 'একটি ভাষা বেছে নিন।',
+
+    // The business window's connection problems (Window\ConnectionProblems)
+    'window_offline_bar' => 'ইন্টারনেট নেই। আপনার কাজ এখানেই আছে।',
+    'window_load_failed_offline' => 'আপনার ইন্টারনেট বন্ধ, তাই পেজটি খোলা যায়নি।',
+    'window_load_failed_office' => 'Sylloo এই মুহূর্তে সাড়া দিচ্ছে না (হয়তো আপডেট হচ্ছে)। অবস্থা দেখুন :status-এ।',
+    'window_tries_again' => ':app নিজে থেকেই আবার চেষ্টা করবে।',
 ];

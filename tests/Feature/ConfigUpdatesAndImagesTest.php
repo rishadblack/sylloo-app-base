@@ -88,6 +88,32 @@ describe('the signed remote config', function () {
             ->and($config->verify(['payload' => ['schema' => 1, 'serial' => 2], 'signature' => base64_encode(str_repeat('x', 64))]))->toBeNull();
     });
 
+    it('takes the Android installer (https, sha256) and gives it to the app', function () {
+        $sha = str_repeat('AB12', 16);
+        $payload = ['schema' => 1, 'serial' => 3, 'release' => ['latest_version' => '1.1.0', 'android' => ['url' => 'https://github.com/x/releases/download/v1.1.0/app.apk', 'sha256' => $sha]]];
+        Http::fake(['releases.example/*' => Http::response(['payload' => $payload, 'signature' => RemoteConfig::sign($payload, $this->secretKey)])]);
+        $config = app(RemoteConfig::class);
+
+        expect($config->androidRelease())->toBeNull()
+            ->and($config->refresh())->toBeTrue()
+            ->and((new RemoteConfig)->androidRelease())->toBe(['url' => 'https://github.com/x/releases/download/v1.1.0/app.apk', 'sha256' => strtolower($sha)]);
+    });
+
+    it('refuses an Android installer that is not https or has no proper sha256', function (array $android) {
+        $payload = ['schema' => 1, 'serial' => 2, 'release' => ['android' => $android]];
+        $config = new RemoteConfig;
+
+        expect($config->verify(['payload' => $payload, 'signature' => RemoteConfig::sign($payload, $this->secretKey)]))->toBeNull()
+            ->and($config->lastRefusal)->toContain('release.android');
+    })->with([
+        'http' => [['url' => 'http://github.com/app.apk', 'sha256' => str_repeat('a', 64)]],
+        'a user in the address' => [['url' => 'https://me:pw@github.com/app.apk', 'sha256' => str_repeat('a', 64)]],
+        'no url' => [['sha256' => str_repeat('a', 64)]],
+        'short sha256' => [['url' => 'https://github.com/app.apk', 'sha256' => str_repeat('a', 63)]],
+        'not hex' => [['url' => 'https://github.com/app.apk', 'sha256' => str_repeat('g', 64)]],
+        'not an object' => [['https://github.com/app.apk']],
+    ]);
+
     it('asks the updater when a newer version is out', function () {
         $platform = fakePlatform();
         $payload = ['schema' => 1, 'serial' => 3, 'release' => ['latest_version' => '1.2.0']];
