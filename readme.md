@@ -41,7 +41,8 @@ $this->app->singleton(BrowserOpener::class, NativeBrowserOpener::class); // opti
 
 Put the `sylloo.device` middleware on your own pages. The shared screens live under `/device/…` (route names
 `sylloo.activate`, `sylloo.sign-in`, `sylloo.create-pin`, `sylloo.pin`, `sylloo.lock`, `sylloo.state`,
-`sylloo.businesses`, `sylloo.pin-settings`, `sylloo.about`, `sylloo.language`).
+`sylloo.businesses`, `sylloo.pin-settings`, `sylloo.about`, `sylloo.language`). Phone SMS adds
+`sylloo.messages-accept` and `sylloo.messages` when config `messages.enabled` is on (`docs/screens.md`, Phone SMS).
 
 ## Add your part without copying a screen
 

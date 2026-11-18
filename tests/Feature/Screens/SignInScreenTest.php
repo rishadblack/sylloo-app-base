@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Sleep;
 use Livewire\Livewire;
 use Rishadblack\SyllooAppBase\Events\PersonSignedIn;
+use Rishadblack\SyllooAppBase\Livewire\Activate;
 use Rishadblack\SyllooAppBase\Livewire\SignIn;
 use Rishadblack\SyllooAppBase\Pin\Presence;
 use Rishadblack\SyllooAppBase\Screens\Handover;
@@ -25,6 +26,30 @@ it('goes to Activate on a device that is not activated', function () {
     TestDevice::bind(activated: false);
 
     Livewire::test(SignIn::class)->assertRedirect(route('sylloo.activate'));
+});
+
+it('opens This device without signing in', function () {
+    Livewire::test(SignIn::class)
+        ->assertSee('This device')
+        ->call('run', 'this_device')
+        ->assertRedirect(route('sylloo.activate'));
+
+    expect(Handover::get(Handover::THIS_DEVICE))->toBeTrue();
+});
+
+it('opens This device in an app that leaves Activate when activated', function () {
+    config(['sylloo-app-base.screens.activate.when_activated' => 'leave']);
+    Handover::put(Handover::THIS_DEVICE, true);
+
+    Livewire::test(Activate::class)->assertSee('Use another activation code');
+
+    expect(Handover::get(Handover::THIS_DEVICE))->toBeNull();
+});
+
+it('hides This device when the app turns it off', function () {
+    config(['sylloo-app-base.screens.sign_in.this_device' => false]);
+
+    Livewire::test(SignIn::class)->assertDontSee('This device');
 });
 
 it('opens the browser and waits for Allow', function () {

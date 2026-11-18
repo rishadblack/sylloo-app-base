@@ -129,4 +129,32 @@ class DeviceApi
     {
         return $this->device()->postOnce('v1/push-token', ['token' => $token], ApiService::INTERACTIVE_TIMEOUT_SECONDS * 2, ApiService::INTERACTIVE_TIMEOUT_SECONDS);
     }
+
+    /**
+     * Phone SMS: what waits for this phone, the pairing asked, paused or not, the SIM, the daily limit and the pace
+     * (`GET messages`, device-api.md §7; the device key only).
+     */
+    public function messages(): Response
+    {
+        return $this->device()->getOnce('v1/messages', ApiService::INTERACTIVE_TIMEOUT_SECONDS * 2);
+    }
+
+    /**
+     * The member's answer to "May this phone send the business's SMS?" (`POST messages/pairing`, with the member's
+     * token): `accept` with the chosen SIM, or `refuse`.
+     *
+     * @param  array{slot: int, label: string}|null  $sim
+     */
+    public function messagesPairing(string $answer, ?array $sim = null): Response
+    {
+        return $this->device()->postOnce('v1/messages/pairing', array_filter(['answer' => $answer, 'sim' => $sim], fn ($value) => $value !== null), ApiService::INTERACTIVE_TIMEOUT_SECONDS * 2, ApiService::INTERACTIVE_TIMEOUT_SECONDS);
+    }
+
+    /**
+     * Pause or resume this phone's sending (`POST messages/pause`, with the member's token).
+     */
+    public function messagesPause(bool $paused): Response
+    {
+        return $this->device()->postOnce('v1/messages/pause', ['paused' => $paused], ApiService::INTERACTIVE_TIMEOUT_SECONDS * 2, ApiService::INTERACTIVE_TIMEOUT_SECONDS);
+    }
 }

@@ -70,8 +70,8 @@ class Hooks
      * - `refused` (`fn (array $refusal, array $context)`): {@see self::refused()};
      * - `activate.continue` (`fn (array $context)`): "Continue" on the confirm card, before Sign in opens (the till's
      *   "Terminal activated" notice);
-     * - `use_another_code` (`fn (array $context)`): "Use another code", after the office was told, before the activation
-     *   is forgotten here (the till also says `released`);
+     * - `use_another_code` (`fn (array $context)`): "Use another code", after the office was told and the release
+     *   started (what waits is sent next, then everything of the activation is removed: the app's ReleaseSteps);
      * - `sign_in.pick` (`fn (DeviceMember $member, array $context)`): a name tile was tapped, before its sign-in is
      *   checked (the till asks the office for the person's PIN hash, `GET me`);
      * - `sign_in.kept` (`fn (DeviceMember $member, SignedInPerson $person, array $context)`): a browser sign-in was kept

@@ -58,7 +58,7 @@ describe('activate', function () {
 
     it('runs the app\'s steps on Continue and after "Use another code"', function () {
         config(['sylloo-app-base.screens.activate.ask_use_another_code' => false]);
-        TestDevice::bind();
+        TestDevice::bind(activated: false);
         $steps = [];
         $this->hooks->step('activate.continue', function () use (&$steps) {
             $steps[] = 'continue';
@@ -67,8 +67,9 @@ describe('activate', function () {
             $steps[] = 'another';
         });
 
-        Livewire::test(Activate::class)->call('run', 'continue')->assertRedirect(route('sylloo.sign-in'));
-        Livewire::test(Activate::class)->call('run', 'use_another_code');
+        Livewire::test(Activate::class)->set('fields.code', '1234-5678-1234-5678')->call('run', 'activate')
+            ->call('run', 'continue')->assertRedirect(route('sylloo.sign-in'));
+        Livewire::test(Activate::class)->call('run', 'use_another_code')->call('run', 'answer_yes')->assertRedirect(route('sylloo.state'));
 
         expect($steps)->toBe(['continue', 'another']);
         $this->office->assertCalled('deactivate');

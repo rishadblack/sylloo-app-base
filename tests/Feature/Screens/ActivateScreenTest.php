@@ -93,25 +93,72 @@ it('says when the office can not be reached', function () {
 });
 
 it('goes on to Sign in', function () {
-    TestDevice::bind();
+    TestDevice::bind(activated: false);
 
     Livewire::test(Activate::class)
+        ->set('fields.code', '1234-5678-1234-5678')
+        ->call('run', 'activate')
         ->assertSee('Device activated')
         ->call('run', 'continue')
         ->assertRedirect(route('sylloo.sign-in'));
 });
 
-it('releases the activation for another code after asking', function () {
+it('shows This device on an activated device: business, LIVE or PRACTICE, the device', function () {
+    TestDevice::bind(['license_mode' => 'practice']);
+
+    Livewire::test(Activate::class)
+        ->assertSee('This device')
+        ->assertSee('XYZ Trading')
+        ->assertSee('PRACTICE')
+        ->assertSee('Counter 1')
+        ->assertSee('Use another activation code')
+        ->assertDontSee('Device activated')
+        ->call('run', 'back')
+        ->assertRedirect(url('/'));
+});
+
+it('releases the activation fully for another code after warning', function () {
     $device = TestDevice::bind();
+
+    $page = Livewire::test(Activate::class)
+        ->call('run', 'use_another_code')
+        ->assertSee('Use another code?')
+        ->assertSee('The activation of this device for XYZ Trading (LIVE) ends on this device, and everyone signed in here is signed out.');
+
+    $this->office->assertNotCalled('deactivate');
+
+    $page->call('run', 'answer_yes')->assertRedirect(route('sylloo.state'));
+
+    $this->office->assertCalled('deactivate');
+    expect($device->state->isReleasing())->toBeTrue()
+        ->and($device->release->calls)->toContain('stopWork');
+});
+
+it('keeps the activation when the office can not be reached', function () {
+    $device = TestDevice::bind();
+    $this->office->down();
 
     Livewire::test(Activate::class)
         ->call('run', 'use_another_code')
-        ->assertSee('Use another code?')
         ->call('run', 'answer_yes')
-        ->assertSee('Activate this device');
+        ->assertSee('Using another activation code needs the internet. Connect and try again.')
+        ->assertNoRedirect();
 
-    $this->office->assertCalled('deactivate');
-    expect($device->state->isActivated())->toBeFalse();
+    expect($device->state->isActivated())->toBeTrue()->and($device->state->isReleasing())->toBeFalse();
+});
+
+it('sends a releasing device to its Releasing screen', function () {
+    TestDevice::bind(['device_releasing' => true]);
+
+    Livewire::test(Activate::class)->assertRedirect(route('sylloo.state'));
+});
+
+it('shows This device in an app that leaves Activate when activated, when asked for it', function () {
+    config(['sylloo-app-base.screens.activate.when_activated' => 'leave']);
+    TestDevice::bind();
+
+    Livewire::test(Activate::class)->assertRedirect(route('sylloo.sign-in'));
+    Livewire::withQueryParams(['details' => '1'])->test(Activate::class)->assertSee('Use another activation code');
 });
 
 it('runs no action the view does not offer', function () {

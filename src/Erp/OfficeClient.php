@@ -14,7 +14,8 @@ use Throwable;
 
 /**
  * The office calls of one activation (device-api.md §1), as named results ({@see OfficeAnswer}): `activate`, `state`,
- * `sign-in/start`, `sign-in/finish`, `pin`, `me`, `sign-out`, `deactivate`, `released`, `push-token`. The headers, the
+ * `sign-in/start`, `sign-in/finish`, `pin`, `me`, `sign-out`, `deactivate`, `released`, `push-token`, and phone SMS's
+ * `messages`, `messages/pairing`, `messages/pause` (§7). The headers, the
  * timeouts and the "office is down" breaker are {@see ApiService}'s and {@see DeviceApi}'s; this class only turns each
  * answer into an outcome, so no screen reads a raw Response or catches a connection error itself.
  *
@@ -96,6 +97,27 @@ class OfficeClient
     public function pushToken(?string $token): OfficeAnswer
     {
         return $this->call(fn () => $this->api->pushToken($token));
+    }
+
+    /**
+     * Phone SMS (device-api.md §7): `GET messages`.
+     */
+    public function messages(): OfficeAnswer
+    {
+        return $this->call(fn () => $this->api->messages(), fn (array $answer) => array_key_exists('connected', $answer));
+    }
+
+    /**
+     * @param  array{slot: int, label: string}|null  $sim
+     */
+    public function messagesPairing(string $answer, ?array $sim = null): OfficeAnswer
+    {
+        return $this->call(fn () => $this->api->messagesPairing($answer, $sim), fn (array $answer) => array_key_exists('pairing', $answer));
+    }
+
+    public function messagesPause(bool $paused): OfficeAnswer
+    {
+        return $this->call(fn () => $this->api->messagesPause($paused), fn (array $answer) => array_key_exists('paused', $answer));
     }
 
     /**

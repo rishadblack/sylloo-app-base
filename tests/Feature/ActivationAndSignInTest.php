@@ -31,6 +31,24 @@ describe('activation', function () {
         ]);
     });
 
+    it('reads the office\'s activation QR in every app, whatever its own link scheme', function (string $scheme) {
+        // What the ERP (Modules/Device PortalDeviceController::code) and the portal (RevealDeviceCode) draw.
+        expect(Activation::codeFromScan('sylloo-app://activate?code=1234567812345678', $scheme))
+            ->toBe(['code' => '1234567812345678', 'link' => true])
+            ->and(Activation::codeFromScan(" sylloo-app://activate?code=1234-5678-1234-5678\n", $scheme))
+            ->toBe(['code' => '1234567812345678', 'link' => true])
+            ->and(Activation::codeFromLink($scheme.'://activate?code=1234567812345678', $scheme))->toBe('1234567812345678');
+    })->with(['Sylloo App' => 'sylloo-app', 'Sylloo POS' => 'sylloo-pos']);
+
+    it('reads 16 digits alone as a code to fill in, and nothing else as a code', function () {
+        expect(Activation::codeFromScan('1234 5678 1234 5678', 'sylloo-app'))->toBe(['code' => '1234567812345678', 'link' => false])
+            ->and(Activation::codeFromScan('https://example.com/p/1234567812345678', 'sylloo-app'))->toBe(['code' => null, 'link' => false])
+            ->and(Activation::codeFromScan('sylloo-app://activate?code=12345678', 'sylloo-app'))->toBe(['code' => null, 'link' => false])
+            ->and(Activation::codeFromScan('other-app://activate?code=1234567812345678', 'sylloo-app'))->toBe(['code' => null, 'link' => false])
+            ->and(Activation::codeFromScan('sylloo-app://signed-in?code=1234567812345678', 'sylloo-app'))->toBe(['code' => null, 'link' => false])
+            ->and(Activation::codeFromScan('123456781234567', 'sylloo-app'))->toBe(['code' => null, 'link' => false]);
+    });
+
     it('keeps only an answer with a key and a mode', function () {
         expect(Activation::isComplete(['device_key' => 'k', 'mode' => 'live']))->toBeTrue()
             ->and(Activation::isComplete(['device_key' => ' ', 'mode' => 'live']))->toBeFalse()

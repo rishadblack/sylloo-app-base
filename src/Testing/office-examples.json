@@ -16,6 +16,7 @@
                 "locked": false
             },
             "business": {
+                "key": "3f9c2a7d1e8b4c6a9d0e5f7a2b8c4d1e",
                 "name": "Demo Ltd",
                 "logo_url": null,
                 "hosts": {
@@ -35,6 +36,44 @@
             "limits": [],
             "min_version": "1.0.0",
             "offline_login_days": 7
+        }
+    },
+    "CRM Call": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/crm/call",
+        "answer": {
+            "data": {
+                "call_key": "4711:call-501",
+                "activity_id": "01JC4Y6AGAAAAAAAAAAAAAAAAA",
+                "subject": "lead",
+                "subject_id": "01JC4Y6AGLLLLLLLLLLLLLLLLL",
+                "name": "Karim Stores",
+                "check_record": false,
+                "removed": false
+            },
+            "server_time": "2026-11-18T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-18T08:59:58Z",
+                "sig": "b3c1f0...e9a2"
+            }
+        }
+    },
+    "CRM Result": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/crm/result",
+        "answer": {
+            "data": {
+                "done_id": "01JC4Y6AGAAAAAAAAAAAAAAAAA",
+                "next_id": "01JC4Y6AGBBBBBBBBBBBBBBBBB",
+                "next_follow_up_at": "2026-11-19T10:00:00Z"
+            },
+            "server_time": "2026-11-18T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-18T08:59:58Z",
+                "sig": "b3c1f0...e9a2"
+            }
         }
     },
     "Deactivate": {
@@ -546,6 +585,7 @@
                 "locked": false
             },
             "business": {
+                "key": "3f9c2a7d1e8b4c6a9d0e5f7a2b8c4d1e",
                 "name": "Demo Ltd",
                 "logo_url": null,
                 "portal_url": "https://portal.sylloo.app/…",
@@ -580,6 +620,30 @@
             "server_time": "2026-11-17T09:00:01Z",
             "anchor": {
                 "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Check-in (lead)": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/visits/check-in",
+        "answer": {
+            "data": {
+                "id": "01JD8Q7T2BDDDDDDDDDDDDDDDD",
+                "customer": "Rahim Traders",
+                "visitable": "lead",
+                "visitable_id": "01JC4Y6AGLLLLLLLLLLLLLLLLL",
+                "check_in_at": "2026-11-18T09:10:00Z",
+                "check_out_at": null,
+                "outcome": null,
+                "state": "open",
+                "reason": null,
+                "distance": null
+            },
+            "server_time": "2026-11-18T09:10:01Z",
+            "anchor": {
+                "at": "2026-11-18T09:09:58Z",
                 "sig": "b3c1f0…e9a2"
             }
         }
@@ -671,6 +735,21 @@
             "server_time": "2026-11-17T09:00:01Z",
             "anchor": {
                 "at": "2026-11-17T08:59:58Z",
+                "sig": "b3c1f0…e9a2"
+            }
+        }
+    },
+    "Visit Place": {
+        "door": "rest",
+        "method": "POST",
+        "path": "actions/visits/place",
+        "answer": {
+            "data": {
+                "result": "saved"
+            },
+            "server_time": "2026-11-18T09:00:01Z",
+            "anchor": {
+                "at": "2026-11-18T08:59:58Z",
                 "sig": "b3c1f0…e9a2"
             }
         }

@@ -54,7 +54,7 @@ class DeviceState
      */
     public const SETTINGS = [
         'activation_key', 'device_id', 'device_name', 'activation_code', 'activation_date',
-        'license_mode', 'business_name', 'business_logo_url', 'business_logo_path', 'business_portal_url', 'business_hosts', 'business_host_url', 'business_rest_url', 'plan', 'blocked', 'min_version',
+        'license_mode', 'business_key', 'business_name', 'business_logo_url', 'business_logo_path', 'business_portal_url', 'business_hosts', 'business_host_url', 'business_rest_url', 'plan', 'blocked', 'min_version',
         'offline_login_days', 'is_locked', 'device_kind',
     ];
 
@@ -187,6 +187,11 @@ class DeviceState
         if (is_array($state['business'] ?? null)) {
             $business = $state['business'];
 
+            // The business's fixed key (`business.key`); an older ERP sends none and the kept one stays.
+            if (array_key_exists('key', $business)) {
+                $this->store->set('business_key', self::validKey($business['key']));
+            }
+
             if (is_string($business['name'] ?? null) && $business['name'] !== '') {
                 $this->store->set('business_name', $business['name']);
             }
@@ -288,6 +293,16 @@ class DeviceState
         $name = $this->get('business_name');
 
         return is_string($name) && $name !== '' ? $name : null;
+    }
+
+    /**
+     * The business's fixed key the ERP sent (`business.key`): the same on Live and Practice and whatever host the device
+     * uses, so two devices can tell they belong to one business (the till's phone scanner pairing). Null before an ERP
+     * that sends it answered.
+     */
+    public function businessKey(): ?string
+    {
+        return self::validKey($this->get('business_key'));
     }
 
     public function deviceName(): ?string
@@ -541,6 +556,14 @@ class DeviceState
     protected function extraScreen(): ?string
     {
         return app(StateRegistry::class)->resolve($this);
+    }
+
+    /**
+     * A business key as the ERP makes it (letters, digits, `-` and `_`, 16 to 128 long), or null.
+     */
+    protected static function validKey(mixed $value): ?string
+    {
+        return is_string($value) && preg_match('/^[A-Za-z0-9_-]{16,128}$/', $value) === 1 ? $value : null;
     }
 
     protected static function date(mixed $value): ?string

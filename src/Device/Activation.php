@@ -38,8 +38,15 @@ final class Activation
     }
 
     /**
+     * The scheme of the activation QR code the office draws for every kind of device (ERP Modules/Device
+     * `PortalDeviceController::code()`, portal `RevealDeviceCode::LINK_PREFIX`): always `sylloo-app`, also for a till
+     * whose own link scheme is `sylloo-pos`.
+     */
+    public const QR_SCHEME = 'sylloo-app';
+
+    /**
      * The code of an activation link (`<scheme>://activate?code=<16 digits>`, the portal's QR code), or null for any
-     * other link. Only that exact shape is accepted; the app fills the field and never activates by itself.
+     * other link. The app's own scheme and {@see self::QR_SCHEME} are read; the code may carry dashes or spaces.
      */
     public static function codeFromLink(mixed $url, string $scheme): ?string
     {
@@ -47,20 +54,53 @@ final class Activation
             $url = $url['url'] ?? ($url[0] ?? null);
         }
 
-        if (! is_string($url) || $url === '') {
+        if (! is_string($url) || trim($url) === '') {
             return null;
         }
 
-        $parts = parse_url($url);
+        $parts = parse_url(trim($url));
+        $schemes = array_unique([strtolower($scheme), self::QR_SCHEME]);
 
-        if (! is_array($parts) || strtolower($parts['scheme'] ?? '') !== strtolower($scheme) || strtolower($parts['host'] ?? '') !== 'activate') {
+        if (! is_array($parts) || ! in_array(strtolower($parts['scheme'] ?? ''), $schemes, true) || strtolower($parts['host'] ?? '') !== 'activate') {
             return null;
         }
 
         parse_str((string) ($parts['query'] ?? ''), $query);
         $code = is_string($query['code'] ?? null) ? $query['code'] : '';
 
-        return self::isCode($code) ? $code : null;
+        return self::codeOfDigitsOnly($code);
+    }
+
+    /**
+     * What a scanned QR code holds: the code and whether it came as an activation link (`link` true: the office's QR,
+     * so the app may activate at once), as the 16 digits alone (`link` false: the app fills the field), or no code
+     * (`code` null: any other text, a web address with digits in it included).
+     *
+     * @return array{code: ?string, link: bool}
+     */
+    public static function codeFromScan(mixed $text, string $scheme): array
+    {
+        $link = self::codeFromLink($text, $scheme);
+
+        if ($link !== null) {
+            return ['code' => $link, 'link' => true];
+        }
+
+        return ['code' => is_string($text) ? self::codeOfDigitsOnly($text) : null, 'link' => false];
+    }
+
+    /**
+     * The 16 digits of a text that holds only digits, dashes and spaces, else null.
+     */
+    private static function codeOfDigitsOnly(string $text): ?string
+    {
+        if (preg_match('/^[\d\s-]+$/', trim($text)) !== 1) {
+            return null;
+        }
+
+        $digits = self::digitsOf($text);
+
+        return self::isCode($digits) ? $digits : null;
     }
 
     /**

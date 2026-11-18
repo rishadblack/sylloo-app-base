@@ -28,6 +28,8 @@ final class ScreenRoutes
         'pin_settings' => 'sylloo.pin-settings',
         'about' => 'sylloo.about',
         'language' => 'sylloo.language',
+        'messages_accept' => 'sylloo.messages-accept',
+        'messages' => 'sylloo.messages',
     ];
 
     /** The base's paths, under `routes.prefix` (the defaults). */
@@ -42,6 +44,8 @@ final class ScreenRoutes
         'pin_settings' => 'settings/pin',
         'about' => 'about',
         'language' => 'language',
+        'messages_accept' => 'messages/accept',
+        'messages' => 'messages',
     ];
 
     /** The web face of each screen. */
@@ -56,6 +60,14 @@ final class ScreenRoutes
         'pin_settings' => Livewire\PinSettings::class,
         'about' => Livewire\About::class,
         'language' => Livewire\Language::class,
+        'messages_accept' => Livewire\MessagesAccept::class,
+        'messages' => Livewire\Messages::class,
+    ];
+
+    /** Screens drawn only when the app turns their feature on (phone SMS: config `messages.enabled`). */
+    public const OPTIONAL = [
+        'messages_accept' => 'sylloo-app-base.messages.enabled',
+        'messages' => 'sylloo-app-base.messages.enabled',
     ];
 
     /**
@@ -76,7 +88,8 @@ final class ScreenRoutes
                 'path' => trim(is_string($set['path'] ?? null) ? $set['path'] : self::PATHS[$screen], '/'),
                 'name' => is_string($set['name'] ?? null) && $set['name'] !== '' ? $set['name'] : self::NAMES[$screen],
                 'component' => is_string($custom) && class_exists($custom) ? $custom : $component,
-                'drawn' => $config !== false && ($set['enabled'] ?? true) !== false,
+                'drawn' => $config !== false && ($set['enabled'] ?? true) !== false
+                    && (! isset(self::OPTIONAL[$screen]) || config(self::OPTIONAL[$screen], false) === true),
             ];
         }
 

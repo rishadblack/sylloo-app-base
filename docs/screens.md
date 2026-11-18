@@ -15,6 +15,8 @@ Each screen is one logic class (`src/Screens`) and one web face (`src/Livewire`)
 | PIN and lock settings | `sylloo.pin-settings` | `PinSettingsScreen` | `settings` | `change_pin`, `save_idle`, `lock_now`, `deactivate` | `pin_settings.bottom` | `deactivate` |
 | About | `sylloo.about`, modal `sylloo-app-base.about` | `AboutScreen` | `about` | `update_now` (with an updater) | `about.rows` | |
 | Language | `sylloo.language`, modal `sylloo-app-base.language` | `LanguageScreen` | `choose` | `save` | | |
+| Phone SMS: accept (optional) | `sylloo.messages-accept` (`messages/accept`) | `MessagesAcceptScreen` | `permission`, `ask`, `no_sim`, `connected`, `nothing`, `offline`, `unavailable` | `allow_android`, `accept`, `refuse`, `check_again`, `open_messages`, `poll` | `messages_accept.top`, `messages_accept.bottom` | `messages_accept` |
+| Phone SMS: Messages (optional) | `sylloo.messages` (`messages`) | `MessagesScreen` | `status`, `not_connected`, `unavailable` | `pause`, `resume`, `check_now`, `allow_android`, `answer`, `poll` | `messages.top`, `messages.bottom` | |
 
 The layout offers `layout.header` and `layout.footer`.
 
@@ -126,3 +128,18 @@ Each hook is optional; without it the screen behaves as before. Register them in
 Sign in also checks the office's answer to `sign-in/start` itself: a missing request id, or a browser address that is not
 a web page (https; http outside production), shows `unexpected` and opens nothing; no answer at all shows
 `sign_in_unreachable`. A finished sign-in answered OK but without a person shows `unexpected`.
+
+## Phone SMS (optional, phone-messaging-plan.md)
+
+The two phone SMS screens are drawn only when the app sets config `messages.enabled` (env `SYLLOO_PHONE_SMS`) and
+binds `Contracts\MessagingPhone` (an Android app binds `Rishadblack\SyllooAppNative\Messages`). Without a phone
+that can send they say so (step `unavailable`).
+
+| Need | How |
+|---|---|
+| Keep the background job going | `app(Messaging\PhoneMessaging::class)->keepGoing()` when the app opens and at every return to it: it asks the office (`GET messages`), then hands the device key, the office address and the app version to the phone (`start`) while this phone is the connected one, stops it otherwise, and only wakes it offline. |
+| A menu entry | `PhoneMessaging::menuEntry()` = `['screen' => 'messages' or 'messages_accept', 'label' => …, 'badge' => bool]` (badge while the office asks), null when phone SMS is off. `needsAnswer()` for a banner. |
+| A manager's approval before Allow | `->ask('messages_accept', 'manager', fn (array $context) => new Question(…))`; the context adds `sim` (`slot`, `label`). |
+| The answer and Pause need a member | `POST messages/pairing` and `POST messages/pause` go with the signed-in member's token; with none the screen sends the person to Sign in. |
+| Tests | `Testing\FakeMessagingPhone::bind(permission:, sims:, state:)` turns the switch on and records `askPermission`, `start`, `wake`, `stop`. |
+

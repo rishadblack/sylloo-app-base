@@ -69,7 +69,7 @@ describe('notices', function () {
             && $params['cancelMethod'] === 'answerQuestion' && $params['cancelParams'] === [['yes' => false]]
             && $params['title'] === 'Reset terminal?' && $params['message'] === "Another business.\n14 sales are safe" && $params['danger'] === true);
 
-        $page->call('answerQuestion', ['yes' => true])->assertSee('Activate this device');
+        $page->call('answerQuestion', ['yes' => true])->assertRedirect(route('sylloo.state'));
         $this->office->assertCalled('deactivate');
     });
 });
@@ -134,16 +134,30 @@ describe('activate', function () {
         expect($device->state->isActivated())->toBeFalse();
     });
 
-    it('uses another code without asking when the app turns the question off', function () {
+    it('uses another code right after activating without asking when the app turns the question off', function () {
         config(['sylloo-app-base.screens.activate.ask_use_another_code' => false]);
-        $device = TestDevice::bind();
+        $device = TestDevice::bind(activated: false);
+
+        Livewire::test(Activate::class)
+            ->set('fields.code', '1234-5678-1234-5678')
+            ->call('run', 'activate')
+            ->call('run', 'use_another_code')
+            ->assertDontSee('Use another code?')
+            ->assertRedirect(route('sylloo.state'));
+
+        expect($device->state->isReleasing())->toBeTrue();
+    });
+
+    it('always asks before "Use another activation code" on This device, even when the app turns the question off', function () {
+        config(['sylloo-app-base.screens.activate.ask_use_another_code' => false]);
+        TestDevice::bind();
 
         Livewire::test(Activate::class)
             ->call('run', 'use_another_code')
-            ->assertDontSee('Use another code?')
-            ->assertSee('Activate this device');
+            ->assertSee('Use another code?')
+            ->assertNoRedirect();
 
-        expect($device->state->isActivated())->toBeFalse();
+        $this->office->assertNotCalled('deactivate');
     });
 });
 

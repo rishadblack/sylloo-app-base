@@ -2,6 +2,55 @@
 
 All notable changes to `rishadblack/sylloo-app-base` are documented in this file.
 
+## 1.2.0 - 2026-11-18
+
+### This device and "Use another activation code" (owner, 2026-11-18)
+
+- Activate opened again on an activated device shows "This device": the business, LIVE / PRACTICE, the device's name
+  and kind, with "Back" and "Use another activation code" (Practice to Live, or another business). It always warns
+  first (`use_another_warning`).
+- "Use another code" (also on the confirm card right after activating) now runs the full release,
+  `DeviceRelease::deactivate()` as "Deactivate this device": the office frees the place, everybody is signed out, what
+  waits is sent, everything of the activation is removed, then Activate asks for the new code. Offline nothing changes
+  (`use_another_offline`). Before, it only told the office and forgot the key, leaving members, PINs and data behind.
+- A releasing device opening Activate always goes to its Releasing screen.
+- Sign in has a quiet "This device" button (action `this_device`; config `screens.sign_in.this_device`, on by
+  default), so the card opens without signing in. In an app with `when_activated` = `leave` the card opens through
+  it (`Handover::THIS_DEVICE`) or `?details=1`.
+- New texts (en, bn, fi): `this_device_title`, `this_device_text`, `back`, `use_another_activation_code`,
+  `use_another_warning`, `use_another_offline`.
+
+### Business key (owner, 2026-11-18)
+
+- `DeviceState::businessKey()`: the business's fixed key the ERP sends (`business.key` in `activate` and `GET state`),
+  kept under `business_key` (forgotten with the activation). The same on Live and Practice and whatever host the
+  device uses; the tills' phone scanner pairing compares it (remote-scanner.md §5.1). An older ERP sends none: the
+  kept key stays, null before any.
+
+### Activation QR code (owner, 2026-11-18)
+
+- `Activation::codeFromScan($text, $scheme)`: what a scanned QR holds, `code` and `link` (true for the office's
+  activation link, so the app may activate at once). `codeFromLink()` also reads `Activation::QR_SCHEME`
+  (`sylloo-app`, the scheme the ERP and the portal always draw, also for a till whose own scheme is `sylloo-pos`) and
+  a code with dashes or spaces. Digits are no longer pulled out of any text: a web address with 16 digits in it is not
+  a code.
+
+### Phone SMS screens (phone-messaging-plan.md SM2)
+
+- Two optional shared screens, written once for both apps, texts in English, Bangla and Finnish:
+  `Screens\MessagesAcceptScreen` (`messages_accept`, route `sylloo.messages-accept`: Android's SMS permission, one
+  sentence naming the SIM and who pays, a SIM to choose on a two-SIM phone, Allow / Refuse sent as
+  `POST messages/pairing` with the member's token; moment `messages_accept` for an app's approval) and
+  `Screens\MessagesScreen` (`messages`, route `sylloo.messages`: waiting, sent today of the daily limit, failed today,
+  the SIM, Pause / Resume, what is missing: internet, signal, permission). Web faces `Livewire\MessagesAccept` and
+  `Livewire\Messages`.
+- `Contracts\MessagingPhone` (the phone's side, bound by the phone package), `Messaging\PhoneMessaging`
+  (`enabled`, `keepGoing`, `startPhone`, `needsAnswer`, `menuEntry`), `DeviceApi::messages()`,
+  `messagesPairing()`, `messagesPause()` and the same on `OfficeClient`.
+- Config `messages.enabled` (env `SYLLOO_PHONE_SMS`, default false); `ScreenRoutes::OPTIONAL` draws the two routes only
+  when it is on.
+- `Testing\FakeMessagingPhone`.
+
 ## 1.1.0 - 2026-11-18
 
 ### The business window (from Sylloo App's desktop D2)

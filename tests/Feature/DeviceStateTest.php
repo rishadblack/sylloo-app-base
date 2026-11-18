@@ -80,6 +80,31 @@ describe('what the ERP says', function () {
             ->and($device->offlineLoginDays())->toBe(7);
     });
 
+    it('keeps the business key from the activation and from a later state answer', function () {
+        $device = activatedDevice(activated: false);
+        $key = '3f9c2a7d1e8b4c6a9d0e5f7a2b8c4d1e';
+
+        $device->rememberActivation(['device_key' => 'key-new', 'device_id' => 12, 'mode' => 'live', ...stateAnswer(['business' => ['key' => $key, 'name' => 'XYZ Trading']])], '1234123412341234', 'Front desk');
+
+        expect($device->businessKey())->toBe($key);
+
+        // An older ERP sends no key: the kept one stays.
+        $device->remember(stateAnswer());
+        expect($device->businessKey())->toBe($key);
+
+        // A till activated before the ERP sent it learns it from the next state answer.
+        $older = activatedDevice();
+        expect($older->businessKey())->toBeNull();
+
+        $older->remember(stateAnswer(['business' => ['key' => $key]]));
+        expect($older->businessKey())->toBe($key);
+
+        // A key that is not one is never kept.
+        $older->remember(stateAnswer(['business' => ['key' => 'short']]));
+        expect($older->businessKey())->toBeNull()
+            ->and(DeviceState::SETTINGS)->toContain('business_key');
+    });
+
     it('starts releasing when the state says the device was released', function () {
         $device = activatedDevice();
 

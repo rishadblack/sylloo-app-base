@@ -22,6 +22,9 @@ final class Handover
     /** Sign in starts the browser sign-in as it opens ("Forgot PIN?" with `screens.pin.forgot_starts_browser`). */
     public const START_BROWSER = 'start_browser';
 
+    /** "This device" on Sign in: Activate shows the activation card even in an app that leaves it when activated. */
+    public const THIS_DEVICE = 'this_device';
+
     public static function put(string $key, mixed $value): void
     {
         session()->put(self::SESSION_KEY.'.'.$key, $value);

@@ -74,6 +74,17 @@ return [
     ],
 
     /*
+     * Phone SMS (phone-messaging-plan.md): the business's SMS sent from this phone's SIM. Off unless the app turns it on
+     * (the Android till, Sylloo App in Staff mode) and binds Contracts\MessagingPhone (the phone package's Messages).
+     * On, the screens `messages_accept` (/device/messages/accept, sylloo.messages-accept) and `messages`
+     * (/device/messages, sylloo.messages) are added; Messaging\PhoneMessaging is what the app calls (keepGoing at every
+     * return to the app, menuEntry for its menu).
+     */
+    'messages' => [
+        'enabled' => (bool) env('SYLLOO_PHONE_SMS', false),
+    ],
+
+    /*
      * The look of the shared screens' web faces. `layout`: the layout they render in (null = `layout` below, the base's
      * own); an app's layout gets `$slot`, `$screen` and `$step`. `classes`: extra CSS classes per part (screen, icon,
      * header, title, text, todo, notice, question, card, rows, lines, fields, buttons, button), for every screen (`*`) or
@@ -114,6 +125,9 @@ return [
         'sign_in' => [
             // The plan's devices are all in use at sign-in: problem (one line) or list (the devices in use, step limit).
             'device_limit' => 'problem',
+            // A quiet "This device" button: the activation card (business, LIVE / PRACTICE, device) and "Use another
+            // activation code", without signing in.
+            'this_device' => true,
         ],
         'state' => [
             // A check without an answer: toast (a short message) or screen (the "Can't reach Sylloo" state screen).

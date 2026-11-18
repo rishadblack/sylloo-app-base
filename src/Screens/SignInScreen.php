@@ -104,7 +104,10 @@ class SignInScreen extends Screen
             text: ($state->data['forgot'] ?? false) === true ? $this->t('sign_in_forgot_text') : ($tiles !== [] ? $this->t('sign_in_tiles_text') : $this->t('sign_in_text')),
             step: 2,
             fields: $tiles !== [] ? [new Field('member', 'tiles', $this->t('sign_in_who'), null, $tiles, 'pick')] : [],
-            buttons: [new Button('browser', $this->t('sign_in_browser'), 'primary', 'bi bi-box-arrow-up-right')],
+            buttons: [
+                new Button('browser', $this->t('sign_in_browser'), 'primary', 'bi bi-box-arrow-up-right'),
+                ...(config('sylloo-app-base.screens.sign_in.this_device', true) !== false ? [new Button('this_device', $this->t('this_device_title'), 'link', 'bi bi-info-circle')] : []),
+            ],
             notices: $this->notices($state),
             places: ['sign_in.top', 'sign_in.below_tiles', 'sign_in.bottom'],
             header: $this->businessHeader(),
@@ -152,6 +155,16 @@ class SignInScreen extends Screen
 
         Handover::put('member', $member->memberKey());
         $state->goTo('pin');
+    }
+
+    /**
+     * "This device": the activation card (which business, LIVE / PRACTICE, the device) and "Use another activation
+     * code", without signing in.
+     */
+    protected function doThisDevice(ScreenState $state): void
+    {
+        Handover::put(Handover::THIS_DEVICE, true);
+        $state->goTo('activate');
     }
 
     /**
