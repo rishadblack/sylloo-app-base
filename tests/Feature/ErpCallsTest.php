@@ -7,6 +7,7 @@ use Rishadblack\SyllooAppBase\Erp\ApiService;
 use Rishadblack\SyllooAppBase\Erp\DeviceApi;
 use Rishadblack\SyllooAppBase\Erp\ErpCircuitBreaker;
 use Rishadblack\SyllooAppBase\Erp\Refusal;
+use Rishadblack\SyllooAppBase\Erp\RefusalCode;
 
 beforeEach(function () {
     config(['erp.base_url' => 'https://sylloo-erp.example', 'nativephp.version' => '2.1.0']);
@@ -96,5 +97,18 @@ describe('refusals', function () {
 
         expect($limit)->toBe(['allowed' => 2, 'devices' => [['name' => 'Desk 1', 'last_seen_at' => '2026-11-01', 'last_user' => 'Rahim']]])
             ->and(Refusal::isDeviceLimit('device_limit_reached_app', 'app'))->toBeTrue();
+    });
+
+    it('says the business has no employee phone left, without the list of devices in use', function () {
+        app()->setLocale('en');
+
+        expect(Refusal::text(['code' => 'device_limit_reached_employee', 'message' => 'x']))
+            ->toStartWith('This business has reached its number of employee phones.')
+            ->and(RefusalCode::DeviceLimitReachedEmployee->isDeviceLimit())->toBeFalse()
+            ->and(RefusalCode::DeviceLimitReachedEmployee->isGate())->toBeFalse();
+
+        foreach (['bn', 'fi'] as $locale) {
+            expect(trans()->has('sylloo-app-base::device.refused_device_limit_reached_employee', $locale, false))->toBeTrue();
+        }
     });
 });

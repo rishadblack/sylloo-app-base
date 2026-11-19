@@ -75,6 +75,7 @@ return [
     'refused_too_many_pending' => 'Monta uutta :device_part odottaa ensimmäistä kirjautumista. Kirjaudu ensin johonkin niistä tai yritä huomenna uudelleen.',
     'refused_device_limit_reached_pos' => 'Kaikki tilauksen kassat ovat käytössä. Vapauta laite, jota et enää käytä, kohdassa Sylloo › Asetukset › Laitteet.',
     'refused_device_limit_reached_app' => 'Kaikki tilauksen sovelluslaitteet ovat käytössä. Vapauta laite, jota et enää käytä, kohdassa Sylloo › Asetukset › Laitteet.',
+    'refused_device_limit_reached_employee' => 'Tämän yrityksen työntekijäpuhelimien määrä on täynnä. Pyydä henkilöstöhallintoa vapauttamaan puhelin, jota ei enää käytetä.',
     'refused_employee_phone_only' => 'Työntekijäsovellus toimii vain puhelimessa.',
     'refused_employee_app_off' => 'Työntekijäsovellus on poistettu käytöstä tässä yrityksessä. Kysy henkilöstöhallinnolta.',
     'refused_app_too_old' => 'Päivitä :app jatkaaksesi.',

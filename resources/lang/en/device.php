@@ -75,6 +75,7 @@ return [
     'refused_too_many_pending' => 'Many new :devices wait for their first sign-in. Sign in on one of them first, or try again tomorrow.',
     'refused_device_limit_reached_pos' => 'Every till of the plan is in use. Release a device you no longer use in Sylloo › Settings › Devices.',
     'refused_device_limit_reached_app' => 'Every app device of the plan is in use. Release a device you no longer use in Sylloo › Settings › Devices.',
+    'refused_device_limit_reached_employee' => 'This business has reached its number of employee phones. Ask HR to release a phone that is no longer used.',
     'refused_employee_phone_only' => 'The Employee app works on a phone only.',
     'refused_employee_app_off' => 'The Employee app is turned off for this business. Ask HR.',
     'refused_app_too_old' => 'Update :app to go on.',

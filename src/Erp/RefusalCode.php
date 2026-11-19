@@ -21,6 +21,9 @@ enum RefusalCode: string
     case TooManyPending = 'too_many_pending';
     case DeviceLimitReachedPos = 'device_limit_reached_pos';
     case DeviceLimitReachedApp = 'device_limit_reached_app';
+    // The business's employee phones are all taken (owner 2026-11-19). It names no other phones, so it is a plain
+    // refusal, not the All devices in use list.
+    case DeviceLimitReachedEmployee = 'device_limit_reached_employee';
     case EmployeePhoneOnly = 'employee_phone_only';
     case EmployeeAppOff = 'employee_app_off';
     case AppTooOld = 'app_too_old';

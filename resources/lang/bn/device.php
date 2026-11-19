@@ -74,6 +74,7 @@ return [
     'refused_too_many_pending' => 'অনেক নতুন :device প্রথম সাইন ইনের অপেক্ষায় আছে। আগে তার একটিতে সাইন ইন করুন, বা আগামীকাল আবার চেষ্টা করুন।',
     'refused_device_limit_reached_pos' => 'প্ল্যানের সব টার্মিনাল ব্যবহারে আছে। যে ডিভাইস আর ব্যবহার করেন না সেটি Sylloo › Settings › Devices থেকে রিলিজ করুন।',
     'refused_device_limit_reached_app' => 'প্ল্যানের সব অ্যাপ ডিভাইস ব্যবহারে আছে। যে ডিভাইস আর ব্যবহার করেন না সেটি Sylloo › Settings › Devices থেকে রিলিজ করুন।',
+    'refused_device_limit_reached_employee' => 'এই ব্যবসার কর্মী ফোনের সংখ্যা পূর্ণ হয়ে গেছে। যে ফোন আর ব্যবহার হয় না সেটি রিলিজ করতে HR-কে বলুন।',
     'refused_employee_phone_only' => 'কর্মী অ্যাপ শুধু ফোনে চলে।',
     'refused_employee_app_off' => 'এই ব্যবসার জন্য কর্মী অ্যাপ বন্ধ আছে। HR-কে জিজ্ঞেস করুন।',
     'refused_app_too_old' => 'চালিয়ে যেতে :app আপডেট করুন।',
