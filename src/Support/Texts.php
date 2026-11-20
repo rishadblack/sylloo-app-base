@@ -29,9 +29,20 @@ final class Texts
      */
     public static function get(string $key, array $replace = [], ?string $locale = null): string
     {
+        $replace = array_map(fn ($value) => is_int($value) || is_float($value) || (is_string($value) && is_numeric($value)) ? self::digits((string) $value, $locale) : $value, $replace);
         $text = __(self::NAMESPACE.'.'.$key, [...self::parameters($locale), ...$replace], $locale);
 
         return is_string($text) ? $text : self::NAMESPACE.'.'.$key;
+    }
+
+    /**
+     * The digits of a text in the language's own digits (Bangla: ০–৯; phone check 2026-11-20: "5 tries left", the PIN
+     * pad and the version stayed 0–9 in Bangla). Other languages keep 0–9. Only for showing: never for what is typed or
+     * sent.
+     */
+    public static function digits(string $text, ?string $locale = null): string
+    {
+        return ($locale ?? app()->getLocale()) === 'bn' ? numberEnToBn($text) : $text;
     }
 
     /**

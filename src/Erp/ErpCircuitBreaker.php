@@ -70,6 +70,15 @@ class ErpCircuitBreaker
     }
 
     /**
+     * The person asked to try now ("Tap to try now"): the next call dials at once. The failures stay counted, so a
+     * failed try opens the breaker again with the grown cool-down.
+     */
+    public static function tryNow(): void
+    {
+        Cache::forget(self::OPEN_UNTIL_CACHE_KEY);
+    }
+
+    /**
      * The ERP answered: background calls run again.
      */
     public static function recordSuccess(): void

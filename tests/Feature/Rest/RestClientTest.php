@@ -161,6 +161,17 @@ describe('the client', function () {
             ->and($result->retryAfter)->toBe(60);
     });
 
+    it('keeps a write waiting when the office fails on its side (HTTP 500), as offline', function () {
+        $this->office->rest('actions/hr/punch', ['message' => 'Server Error'], 500);
+        $this->office->rest('actions/hr/visit', ['message' => 'Not right.', 'code' => 'refused'], 422);
+
+        $failed = $this->client->run('hr/punch', []);
+        $refused = $this->client->run('hr/visit', []);
+
+        expect($failed->isServerError())->toBeTrue()->and($failed->keepsWaiting())->toBeTrue()->and($failed->isRefused())->toBeFalse()
+            ->and($refused->keepsWaiting())->toBeFalse();
+    });
+
     it('answers unreachable with no internet', function () {
         $this->office->down();
 

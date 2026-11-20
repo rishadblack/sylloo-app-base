@@ -131,6 +131,7 @@ return [
     'pin_too_easy' => 'This PIN is too easy to guess, like 1111 or 1234. Choose another one.',
     'pin_mismatch' => 'The two PINs are not the same.',
     'pin_wrong' => 'This PIN is not right. :tries tries left.',
+    'pin_current_needed' => 'Type your current PIN.',
     'pin_signed_out' => 'Five wrong PINs. Your sign-in on this :device has ended. Sign in with your browser again.',
     'pin_needs_office' => 'This needs the internet. Connect and try again.',
     'pin_forgot' => 'Forgot PIN?',

@@ -13,8 +13,11 @@ use Rishadblack\SyllooAppBase\Livewire\Language as LanguagePage;
 use Rishadblack\SyllooAppBase\Livewire\Modals\AboutModal;
 use Rishadblack\SyllooAppBase\Livewire\PinSettings;
 use Rishadblack\SyllooAppBase\Livewire\State;
+use Rishadblack\SyllooAppBase\Pin\PinSignIn;
 use Rishadblack\SyllooAppBase\Pin\Presence;
 use Rishadblack\SyllooAppBase\Screens\Hooks;
+use Rishadblack\SyllooAppBase\Support\AppInfo;
+use Rishadblack\SyllooAppBase\Support\Texts;
 use Rishadblack\SyllooAppBase\Testing\PretendOffice;
 use Rishadblack\SyllooAppBase\Testing\RecordingBrowser;
 use Rishadblack\SyllooAppBase\Testing\TestDevice;
@@ -142,6 +145,20 @@ describe('PIN and lock settings', function () {
         expect(password_verify('1593', (string) $this->device->members->pinHash($this->rahim)))->toBeTrue();
     });
 
+    it('asks for an empty Current PIN without counting a wrong try', function () {
+        Livewire::test(PinSettings::class)
+            ->set('fields.current_pin', '')
+            ->set('fields.new_pin', '1593')
+            ->set('fields.new_pin_confirmation', '1593')
+            ->call('run', 'change_pin')
+            ->assertHasErrors('fields.current_pin')
+            ->assertSee('Type your current PIN.')
+            ->assertDontSee('tries left');
+
+        expect(PinSignIn::triesLeft($this->rahim))->toBe(PinSignIn::MAX_WRONG);
+        $this->office->assertNotCalled('pin');
+    });
+
     it('keeps the lock time the person chose', function () {
         Livewire::test(PinSettings::class)
             ->assertSet('fields.idle', '5')
@@ -190,7 +207,23 @@ describe('about and language', function () {
             ->assertDontSee('sylloo-hook');
     });
 
+    it('marks a development build and its build number, in Bangla digits in Bangla', function () {
+        TestDevice::bind();
+        config(['sylloo-app-base.app.version' => '1.0.0', 'nativephp.version' => 'DEBUG', 'nativephp.version_code' => 2001]);
+
+        expect(AppInfo::displayVersion())->toBe('1.0.0 DEBUG (2001)');
+
+        Livewire::test(About::class)->assertSee('1.0.0 DEBUG (2001)');
+
+        app()->setLocale('bn');
+
+        Livewire::test(About::class)->assertSee('১.০.০ DEBUG (২০০১)');
+        expect(Texts::get('pin_wrong', ['tries' => 3]))->toContain('৩')
+            ->and(Texts::get('pin_wrong', ['tries' => 3], 'en'))->toContain('3 tries left');
+    });
+
     it('shows About in a modal with what an app adds', function () {
+
         TestDevice::bind();
         app(Hooks::class)->add('about.rows', fn () => 'Till number 3');
 

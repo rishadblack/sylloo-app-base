@@ -61,6 +61,24 @@ final class RestResult
     }
 
     /**
+     * The office failed on its side (HTTP 5xx: an error, or a gateway that is down). Nothing was refused: the same
+     * write may be sent again later with its one-use key.
+     */
+    public function isServerError(): bool
+    {
+        return $this->status >= 500 && $this->status <= 599;
+    }
+
+    /**
+     * A write with this answer is kept to send later, as when offline (phone check 2026-11-20: an HTTP 500 lost the
+     * punch): the office was not reached, asked to wait, or failed on its side.
+     */
+    public function keepsWaiting(): bool
+    {
+        return $this->isUnreachable() || $this->triesLater() || $this->isServerError();
+    }
+
+    /**
      * The door's gate refused the device or the person, not this call (`session_expired`, `device_released`, …, or
      * 426 `app_too_old`).
      */

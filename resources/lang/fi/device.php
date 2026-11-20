@@ -131,6 +131,7 @@ return [
     'pin_too_easy' => 'Tämä PIN on liian helppo arvata, kuten 1111 tai 1234. Valitse toinen.',
     'pin_mismatch' => 'PIN-koodit eivät ole samat.',
     'pin_wrong' => 'PIN ei ole oikein. Yrityksiä jäljellä: :tries.',
+    'pin_current_needed' => 'Kirjoita nykyinen PIN-koodisi.',
     'pin_signed_out' => 'Viisi väärää PIN-koodia. Kirjautumisesi tähän :device_ill päättyi. Kirjaudu uudelleen selaimella.',
     'pin_needs_office' => 'Tähän tarvitaan internetyhteys. Yhdistä ja yritä uudelleen.',
     'pin_forgot' => 'Unohditko PIN-koodin?',

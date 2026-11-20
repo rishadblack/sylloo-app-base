@@ -5,6 +5,7 @@ namespace Rishadblack\SyllooAppBase\Screens;
 use Rishadblack\SyllooAppBase\Contracts\AppUpdater;
 use Rishadblack\SyllooAppBase\Device\DeviceEntry;
 use Rishadblack\SyllooAppBase\Support\AppInfo;
+use Rishadblack\SyllooAppBase\Support\Texts;
 
 /**
  * About: the app, its version and system, and this activation (business, LIVE / PRACTICE, STAFF / EMPLOYEE, device
@@ -33,7 +34,7 @@ class AboutScreen extends Screen
             buttons: app()->bound(AppUpdater::class) ? [new Button('update_now', $this->t('check_updates'), 'outline-primary', 'bi bi-cloud-arrow-down')] : [],
             notices: $this->notices($state),
             rows: [
-                $this->t('about_version') => AppInfo::version(),
+                $this->t('about_version') => Texts::digits(AppInfo::displayVersion()),
                 $this->t('about_platform') => AppInfo::platform(),
                 $this->t('about_business') => $activated ? $device->businessName() : $this->t('about_not_activated'),
                 $this->t('about_mode') => $activated ? ($device->isPractice() ? $this->t('mode_practice') : $this->t('mode_live')) : null,

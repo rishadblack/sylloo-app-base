@@ -75,7 +75,15 @@ class PinSettingsScreen extends Screen
         }
 
         $current = (string) ($fields['current_pin'] ?? '');
-        $result = preg_match('/^\d{4,6}$/', $current) === 1 ? $entry->pins()->check($member, $current) : PinSignIn::WRONG;
+
+        // An empty or short Current PIN is asked for again; it is not a wrong try (phone check 2026-11-20).
+        if (preg_match('/^\d{4,6}$/', $current) !== 1) {
+            $state->error('current_pin', $this->t($current === '' ? 'pin_current_needed' : 'pin_format'));
+
+            return;
+        }
+
+        $result = $entry->pins()->check($member, $current);
 
         if ($result === PinSignIn::SIGNED_OUT) {
             $this->presence->leave();

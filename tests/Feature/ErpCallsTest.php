@@ -57,6 +57,21 @@ it('stops background calls while the ERP is away, but probes still try', functio
     expect(ErpCircuitBreaker::isOpen())->toBeFalse();
 });
 
+it('dials at once after "Tap to try now", and opens again with a longer cool-down when that try fails', function () {
+    foreach (range(1, 3) as $failure) {
+        ErpCircuitBreaker::recordFailure();
+    }
+
+    ErpCircuitBreaker::tryNow();
+
+    expect(ErpCircuitBreaker::isOpen())->toBeFalse();
+
+    ErpCircuitBreaker::recordFailure();
+
+    expect(ErpCircuitBreaker::isOpen())->toBeTrue()
+        ->and(ErpCircuitBreaker::openUntil()->diffInSeconds(now(), true))->toBeGreaterThan(ErpCircuitBreaker::FIRST_COOL_DOWN_SECONDS);
+});
+
 it('opens the breaker for what a 429 asks, at most the longest cool-down', function () {
     ErpCircuitBreaker::openFor(5000);
 

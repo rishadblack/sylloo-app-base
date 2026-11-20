@@ -48,6 +48,28 @@ final class AppInfo
         return mb_substr($version, 0, 20);
     }
 
+    /**
+     * The version as About shows it: {@see self::version()}, marked DEBUG on a development build (NativePHP's version
+     * is `DEBUG` there while the app sends its own number to the office) and followed by the build number when the
+     * app has one (`nativephp.version_code`): "1.0.0 DEBUG (2001)".
+     */
+    public static function displayVersion(): string
+    {
+        $version = self::version();
+        $native = config('nativephp.version');
+        $code = config('nativephp.version_code');
+
+        if ($native === 'DEBUG' && $version !== 'DEBUG') {
+            $version .= ' DEBUG';
+        }
+
+        if (is_numeric($code) && (int) $code > 0) {
+            $version .= ' ('.(int) $code.')';
+        }
+
+        return $version;
+    }
+
     public static function linkScheme(): string
     {
         $scheme = config('sylloo-app-base.app.link_scheme');
