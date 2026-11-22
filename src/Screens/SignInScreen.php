@@ -286,6 +286,7 @@ class SignInScreen extends Screen
             return;
         }
 
+        Handover::put(Handover::CREATE_PIN_FOR, $member->memberKey());
         $state->goTo('create_pin');
     }
 

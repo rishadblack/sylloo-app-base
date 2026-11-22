@@ -89,6 +89,18 @@ describe('state screens', function () {
             ->assertSee('14 sales are safe on this terminal');
     });
 
+    it('never takes the state from a link: ?state=releasing on a working device releases nothing (audit H3)', function () {
+        $device = TestDevice::bind();
+        $device->enter($device->addMember());
+
+        Livewire::withQueryParams(['state' => DeviceState::RELEASING])->test(State::class)->assertRedirect(url('/'));
+
+        expect($device->release->calls)->toBe([])
+            ->and($device->state->isActivated())->toBeTrue()
+            ->and(app(Presence::class)->isSignedIn())->toBeTrue();
+        $this->office->assertNotCalled('released');
+    });
+
     it('goes home when nothing stops the device', function () {
         TestDevice::bind();
 
@@ -186,6 +198,33 @@ describe('PIN and lock settings', function () {
 
         $this->office->assertCalled('deactivate');
         expect($this->device->state->isReleasing())->toBeTrue();
+    });
+
+    it('never opens on a locked device (audit H3)', function () {
+        app(Presence::class)->lock();
+
+        Livewire::test(PinSettings::class)->assertRedirect(route('sylloo.lock'));
+    });
+
+    it('runs nothing once the device locked while it was open (audit H3)', function () {
+        $page = Livewire::test(PinSettings::class);
+        app(Presence::class)->lock();
+
+        $page->set('fields.idle', '0')->call('run', 'save_idle')->assertRedirect(route('sylloo.lock'));
+        $page->call('run', 'deactivate')->assertRedirect(route('sylloo.lock'));
+
+        expect(Presence::idleMinutes($this->device->state))->toBe(5);
+        $this->office->assertNotCalled('deactivate');
+    });
+
+    it('locks by itself when the idle time passed before an action', function () {
+        $page = Livewire::test(PinSettings::class);
+        $this->travel(6)->minutes();
+
+        $page->set('fields.idle', '0')->call('run', 'save_idle')->assertRedirect(route('sylloo.lock'));
+
+        expect(app(Presence::class)->isLocked())->toBeTrue()
+            ->and(Presence::idleMinutes($this->device->state))->toBe(5);
     });
 
     it('shows what an app adds', function () {

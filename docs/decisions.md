@@ -131,3 +131,7 @@ listed at the end for the owner.
     went in the usual way.
 43. **`release.android` may be on any https host** (GitHub's release files are not on the office's domains): the signed
     `sha256` of the APK is what makes it safe, and NativePHP's `Update.Install` checks it before installing.
+44. **Create PIN needs a one-use pass** (native audit C1, 2026-11-21): the screens that send a person to Create PIN
+    put `Handover::CREATE_PIN_FOR`; Create PIN takes it once. The person who is in is never enough: a link opens any
+    native route, and the office's `POST pin` asks only the sign-in token. PIN settings check the lock on open and on
+    every action; the state screen reads only the device's own state. A poll looks without touching the idle time.

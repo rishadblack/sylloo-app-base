@@ -22,6 +22,13 @@ final class Handover
     /** Sign in starts the browser sign-in as it opens ("Forgot PIN?" with `screens.pin.forgot_starts_browser`). */
     public const START_BROWSER = 'start_browser';
 
+    /**
+     * The one person Create PIN may open for, put by the screen that sends them there (browser sign-in, the PIN screen)
+     * and taken once by Create PIN. A link or a reload without it never opens Create PIN (audit C1: a locked device
+     * must not take a new PIN from whoever holds it).
+     */
+    public const CREATE_PIN_FOR = 'create_pin_for';
+
     /** "This device" on Sign in: Activate shows the activation card even in an app that leaves it when activated. */
     public const THIS_DEVICE = 'this_device';
 

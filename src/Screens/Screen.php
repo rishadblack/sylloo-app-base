@@ -113,14 +113,16 @@ abstract class Screen
      * The counted lines the app added at this view's places ({@see Hooks::lines()}), by place: a native face draws them
      * at their place (the web face's hook places do so already).
      *
+     * A face that built the view already passes it, so it is not built twice for one frame.
+     *
      * @return array<string, list<array{text: string, count: int|null, hint: string|null, variant: string, icon: string|null}>>
      */
-    public function placeLines(ScreenState $state): array
+    public function placeLines(ScreenState $state, ?ScreenView $view = null): array
     {
         $context = $this->context($state);
         $lines = [];
 
-        foreach ($this->view($state)->places as $place) {
+        foreach (($view ?? $this->view($state))->places as $place) {
             $found = $this->hooks->linesFor([$place], $context);
 
             if ($found !== []) {

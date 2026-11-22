@@ -38,9 +38,11 @@ class FirstScreen
 
     /**
      * The screen name (a key of ScreenRoutes), or null when the device is ready. When ready, the idle time starts
-     * again, as each page the person opens does.
+     * again, as each page the person opens does. A look that is not the person's doing (a screen's timed poll) passes
+     * `$touch = false`: it locks when the idle time passed but never starts it again (audit H2, else a polling screen
+     * never locks).
      */
-    public function name(): ?string
+    public function name(bool $touch = true): ?string
     {
         $entry = $this->entries->current();
         $screen = $entry->state->screen();
@@ -61,7 +63,9 @@ class FirstScreen
             return self::LOCK;
         }
 
-        $this->presence->touch();
+        if ($touch) {
+            $this->presence->touch();
+        }
 
         return null;
     }

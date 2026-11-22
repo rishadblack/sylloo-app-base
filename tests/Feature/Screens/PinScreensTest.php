@@ -18,6 +18,13 @@ use Rishadblack\SyllooAppBase\Screens\PinScreen;
 use Rishadblack\SyllooAppBase\Testing\PretendOffice;
 use Rishadblack\SyllooAppBase\Testing\TestDevice;
 
+/** What the sign-in or the PIN screen does before it sends a person to Create PIN. */
+function sentToCreatePin(string $memberKey): void
+{
+    Handover::put('member', $memberKey);
+    Handover::put(Handover::CREATE_PIN_FOR, $memberKey);
+}
+
 beforeEach(function () {
     Sleep::fake();
     $this->office = PretendOffice::start();
@@ -28,7 +35,7 @@ describe('create PIN', function () {
     it('saves the PIN at the office and lets the person in', function () {
         Event::fake([PinSaved::class, PersonSignedIn::class]);
         $rahim = $this->device->addMember(pin: null);
-        Handover::put('member', $rahim->memberKey());
+        sentToCreatePin($rahim->memberKey());
 
         Livewire::test(CreatePin::class)
             ->assertSee('Create your PIN')
@@ -46,7 +53,7 @@ describe('create PIN', function () {
     });
 
     it('refuses an easy PIN and two different ones', function () {
-        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
 
         Livewire::test(CreatePin::class)
             ->set('fields.pin', '1234')
@@ -62,7 +69,7 @@ describe('create PIN', function () {
     });
 
     it('needs the office', function () {
-        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
         $this->office->down();
 
         Livewire::test(CreatePin::class)
@@ -77,8 +84,35 @@ describe('create PIN', function () {
         Livewire::test(CreatePin::class)->assertRedirect(route('sylloo.sign-in'));
     });
 
+    it('never opens by a link on a locked device (audit C1)', function () {
+        $this->device->enter($this->device->addMember());
+        app(Presence::class)->lock();
+
+        Livewire::test(CreatePin::class)->assertRedirect(route('sylloo.lock'));
+
+        $this->office->assertNotCalled('pin');
+        expect(app(Presence::class)->isLocked())->toBeTrue();
+    });
+
+    it('never opens by a link for the person who is in, nor with only the member handed over', function () {
+        $rahim = $this->device->addMember();
+        $this->device->enter($rahim);
+        Handover::put('member', $rahim->memberKey());
+
+        Livewire::test(CreatePin::class)->assertRedirect(url('/'));
+
+        $this->office->assertNotCalled('pin');
+    });
+
+    it('opens once per hand-over: a reload goes away', function () {
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
+
+        Livewire::test(CreatePin::class)->assertSee('Create your PIN');
+        Livewire::test(CreatePin::class)->assertRedirect(route('sylloo.sign-in'));
+    });
+
     it('shows what an app adds', function () {
-        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
         app(Hooks::class)->add('create_pin.bottom', fn () => 'Same PIN on the till');
 
         Livewire::test(CreatePin::class)->assertSee('Same PIN on the till');
@@ -184,7 +218,7 @@ describe('after a new PIN, and a verified fingerprint (base 1.1.0)', function ()
 
             return '/fingerprint-offer';
         });
-        Handover::put('member', $rahim->memberKey());
+        sentToCreatePin($rahim->memberKey());
 
         Livewire::test(CreatePin::class)
             ->set('fields.pin', '1357')
@@ -203,7 +237,7 @@ describe('after a new PIN, and a verified fingerprint (base 1.1.0)', function ()
 
             return null;
         });
-        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
         $this->office->down();
 
         Livewire::test(CreatePin::class)
@@ -222,7 +256,7 @@ describe('after a new PIN, and a verified fingerprint (base 1.1.0)', function ()
 
             return null;
         });
-        Handover::put('member', $this->device->addMember(pin: null)->memberKey());
+        sentToCreatePin($this->device->addMember(pin: null)->memberKey());
 
         Livewire::test(CreatePin::class)
             ->set('fields.pin', '1357')

@@ -23,13 +23,46 @@ class PinSettingsScreen extends Screen
 
     public function start(array $input = []): ScreenState
     {
-        $member = $this->memberFor(new ScreenState);
+        // Only for the person who is in (not a member some screen handed over), and never while locked: a link
+        // (`<scheme>://settings/pin`) must not change the idle lock, deactivate the device or turn the fingerprint on
+        // (audit H3).
+        $key = $this->presence->memberKey($this->entry()->id);
+        $member = $key !== null ? $this->entry()->members->member($key) : null;
 
-        if ($member === null || ! $this->presence->isSignedIn($this->entry()->id)) {
+        if ($member === null) {
             return (new ScreenState('settings'))->goTo('sign_in');
         }
 
+        if ($this->presence->lockWhenIdle($this->device())) {
+            return (new ScreenState('settings'))->goTo('lock');
+        }
+
         return $this->begin('settings', ['member' => $member->memberKey(), 'idle' => (string) Presence::idleMinutes($this->device())]);
+    }
+
+    /**
+     * Every action first asks whether the device locked meanwhile (idle, "Lock now" elsewhere) or the person left:
+     * then nothing runs and the screen goes there (audit H3).
+     *
+     * @param  array<string, mixed>  $fields
+     */
+    public function act(ScreenState $state, string $action, array $fields = [], ?string $value = null): ScreenState
+    {
+        if ($this->presence->memberKey($this->entry()->id) !== ($state->data['member'] ?? null)) {
+            $state->goTo('sign_in');
+
+            return $state;
+        }
+
+        if ($this->presence->lockWhenIdle($this->device())) {
+            $state->goTo('lock');
+
+            return $state;
+        }
+
+        $this->presence->touch();
+
+        return parent::act($state, $action, $fields, $value);
     }
 
     public function view(ScreenState $state): ScreenView

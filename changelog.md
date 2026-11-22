@@ -2,6 +2,25 @@
 
 All notable changes to `rishadblack/sylloo-app-base` are documented in this file.
 
+## 1.2.1 - 2026-11-22
+
+### Security (sylloo-app-native audit 2026-11-21)
+
+- C1: Create PIN opens only for the person the browser sign-in or the PIN screen sent there
+  (`Handover::CREATE_PIN_FOR`, taken once). A link (`<scheme>://create-pin`) or a reload goes where the device must go
+  first (Lock, Sign in, …), else home; before, it set a new PIN for the person who was in, even on a locked device.
+- H3: PIN and lock settings never open on a locked device and run no action once it locked (idle time passed or
+  "Lock now") or the person changed; they are always for the person who is in, never a member handed over.
+- H3: the state screen always shows the device's own state; `?state=` is no longer read, and the release runs only on
+  a device the office is releasing (`?state=releasing` signed the person out).
+- H2: `FirstScreen::name(bool $touch = true)`: a timed poll passes `false`, so it locks when the idle time passed but
+  never starts it again.
+
+### Changed (sylloo-app-native audit 2026-11-21, P1)
+
+- `Screen::placeLines(ScreenState $state, ?ScreenView $view = null)`: a face that built the view already passes it, so
+  the view is not built twice for one frame. Callers without the view are unchanged.
+
 ## 1.2.0 - 2026-11-18
 
 ### This device and "Use another activation code" (owner, 2026-11-18)

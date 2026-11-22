@@ -48,7 +48,9 @@ class StateScreen extends Screen
 
     public function start(array $input = []): ScreenState
     {
-        $name = is_string($input['state'] ?? null) && $this->states->has($input['state']) ? $input['state'] : $this->device()->screen();
+        // Always the device's own state: a link's `?state=` is not trusted (audit H3: `?state=releasing` would run the
+        // release and sign the person out on a locked device).
+        $name = $this->device()->screen();
 
         if ($name === DeviceState::NOT_ACTIVATED) {
             return (new ScreenState('activate'))->goTo('activate');
@@ -150,6 +152,13 @@ class StateScreen extends Screen
      */
     protected function releaseStep(ScreenState $state): void
     {
+        // Only a device the office is releasing runs the release (never one a screen state says so of).
+        if ($this->device()->screen() !== DeviceState::RELEASING) {
+            $state->goTo('home');
+
+            return;
+        }
+
         $result = $this->entry()->releaseFrame()->run();
 
         if ($result === DeviceRelease::REFUSED) {

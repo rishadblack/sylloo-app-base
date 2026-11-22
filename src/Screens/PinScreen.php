@@ -241,6 +241,7 @@ class PinScreen extends Screen
         }
 
         Handover::put('member', $member->memberKey());
+        Handover::put(Handover::CREATE_PIN_FOR, $member->memberKey());
         $state->goTo('create_pin');
     }
 

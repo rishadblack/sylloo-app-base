@@ -18,7 +18,16 @@ class CreatePinScreen extends Screen
 
     public function start(array $input = []): ScreenState
     {
-        $member = $this->memberFor(new ScreenState);
+        // Only the person the sign-in or the PIN screen sent here (Handover::CREATE_PIN_FOR, taken once). A link
+        // (`<scheme>://create-pin`) or a reload goes where the device must go first, else home: never a new PIN for
+        // the person who is in on a locked device.
+        $for = Handover::pull(Handover::CREATE_PIN_FOR);
+
+        if (! is_string($for) || $for === '') {
+            return (new ScreenState('pin'))->goTo(app(FirstScreen::class)->name() ?? 'home');
+        }
+
+        $member = $this->entry()->members->member($for);
 
         if ($member === null || ! $member->hasValidToken()) {
             return (new ScreenState('pin'))->goTo('sign_in');
